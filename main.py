@@ -23,7 +23,7 @@ async def index() -> str:
 
 if __name__ == "__main__":
 
-    app.run("0.0.0.0",PORT) # debug server for testing
+    app.run("0.0.0.0",PORT,debug=True) # debug server for testing
 
     ### uncomment for production
     # config = Config()
