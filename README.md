@@ -10,7 +10,7 @@ tags:
 
 This is a [Quart](https://quart.palletsprojects.com/en/latest/) app that serves a simple "Hello World" page.
 
-<!-- [![Deploy on Railway](https://railway.app/button.svg)](link) -->
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/fHCvqD?referralCode=WpeP6D)
 
 ## ✨ Features
 
