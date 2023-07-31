@@ -1,6 +1,5 @@
 
 import asyncio, os
-from routes.utils import app
 from quart import Quart, render_template
 from quart_compress import Compress
 from hypercorn.asyncio import serve
