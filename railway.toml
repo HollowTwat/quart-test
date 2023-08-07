@@ -2,4 +2,4 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "asyncio.run(serve(app, config))"
+startCommand = "serve(app, config)"
