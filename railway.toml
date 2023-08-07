@@ -4,4 +4,4 @@ builder = "nixpacks"
 
 
 [deploy]
-startCommand = "hypercorn main:app --bind \"[::]:$PORT\"
+startCommand = "hypercorn main:app --bind \"[::]:$PORT\""
