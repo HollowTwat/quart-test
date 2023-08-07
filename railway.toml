@@ -2,4 +2,4 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "serve(app, config)"
+startCommand = "serve app -n -L -p $PORT"
