@@ -25,9 +25,9 @@ async def index() -> str:
 
 if __name__ == "__main__":
 
-    app.run("0.0.0.0",PORT,debug=True)              # debug server for testing
+    # app.run("0.0.0.0",PORT,debug=True)              debug
 
     ### FOR PRODUCTION: uncomment and comment out the line above
-    # config = Config()
-    # config.bind = [f"0.0.0.0:{PORT}"]
+    config = Config()
+    config.bind = [f"0.0.0.0:{PORT}"]
     # asyncio.run(serve(app, config))
