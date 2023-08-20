@@ -20,3 +20,22 @@ This is a [Quart](https://quart.palletsprojects.com/en/latest/) app that serves 
 ## 💁‍♀️ How to use
 
 - Install Python requirements `pip install -r requirements.txt`
+
+
+
+## ⚔️ Flask vs Quart
+```diff
+- Flask: request.form      
++ Quart: await request.form
+
+- Flask:                        
+- @app.route('/')               
+- def home():                   
+-     ...                       
++ Quart:                        
++ @app.route('/')               
++ async def home():             
++     ...                       
+```
+
+# thanks
