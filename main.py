@@ -7,6 +7,10 @@ import os
 from quart_compress import Compress
 
 
+
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+
+
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
 openai.api_key = OPENAI_API_KEY
