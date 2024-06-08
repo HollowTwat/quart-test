@@ -1,13 +1,77 @@
 from quart import Quart, request, jsonify
-from bot2 import OPENAI_API_KEY, handle_assistant_response, encode_image, use_vision64
+# from bot2 import OPENAI_API_KEY, handle_assistant_response, encode_image, use_vision64
 import openai
 import requests
+import base64
+
 
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
 openai.api_key = OPENAI_API_KEY
 
 app = Quart(__name__)
+
+
+async def handle_assistant_response(prompt):
+    response = client.completions.create(
+        model="gpt-3.5-turbo-instruct",
+        prompt=prompt,
+        max_tokens=150
+    )
+    return response.choices[0].text.strip()
+
+
+async def send_image_to_gpt4_vision(image_path):
+    with open(image_path, 'rb') as image_file:
+        response = client.embeddings.create(
+            assistant_id=GPT4_VISION_ASSISTANT_ID,
+            file=image_file
+            # model="dall-e"  # Replace with the correct model name if needed
+        )
+    return response['choices'][0]['text']
+
+
+def encode_image(image_path):
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
+
+
+async def use_vision64(file_path):
+
+    base64_image = encode_image(file_path)
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {OPENAI_API_KEY}"
+    }
+
+    payload = {
+        "model": "gpt-4o",
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "Что изображено на этой картинке"
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{base64_image}"
+                        }
+                    }
+                ]
+            }
+        ],
+        "max_tokens": 750
+    }
+
+    response = requests.post(
+        "https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+
+    print(response.json())
+    return str(response.json())
 
 
 async def transcribe_audio(file_path):
@@ -41,6 +105,8 @@ async def use_vision64_from_url(url):
     else:
         raise Exception(
             f"Failed to fetch video from URL: {response.status_code}")
+
+5
 
 
 @app.route("/")
