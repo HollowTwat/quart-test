@@ -119,7 +119,7 @@ async def use_vision64_from_url(url):
 
 @app.route("/")
 async def home():
-    return "Home"
+    return jsonify("Home")
 
 
 @app.route("/get-user/<user_id>")
