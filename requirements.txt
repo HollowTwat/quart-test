@@ -3,3 +3,4 @@ quart>=0.18.4
 quart_compress>=0.2.1
 Werkzeug>=2.3.6
 openai>=1.31.1
+requests>=2.32.3
