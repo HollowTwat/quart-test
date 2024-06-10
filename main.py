@@ -84,8 +84,11 @@ async def use_vision64(file_path):
     response = requests.post(
         "https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
 
-    print(response.json())
-    return str(response.json())
+    
+    response_json = response.json()
+    print(response_json)
+    content = response_json['choices'][0]['message']['content']
+    return content
 
 
 async def transcribe_audio(file_path):
@@ -155,7 +158,12 @@ async def transcribe():
     transcription = await transcribe_audio_from_url(url)
     assistant_response = await handle_assistant_response(transcription)
 
-    return jsonify(transcription, assistant_response), 201
+    response = {
+        "transcription": transcription,
+        "assistant_response": assistant_response
+    }
+
+    return jsonify(response), 201
 
 
 @app.route("/img", methods=["POST"])
