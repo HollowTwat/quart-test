@@ -144,7 +144,7 @@ async def process_image():
     return jsonify(vision), 201
 
 
-@app.route("imgg", methods=["POST"])
+@app.route("/imgg", methods=["POST"])
 async def process_url():
     data = await request.get_json()
     url = data.get('url')
