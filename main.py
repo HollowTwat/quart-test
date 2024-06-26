@@ -32,6 +32,7 @@ async def handle_not_found(e):
 
 
 async def handle_img_link(link):
+    print(link)
     thread = await aclient.beta.threads.create(
         messages=[
 
@@ -46,6 +47,7 @@ async def handle_img_link(link):
         ]
     )
     new_message = await run_assistant(thread)
+    print(new_message)
     return new_message
 
 
@@ -135,6 +137,7 @@ async def transcribe():
 
 @app.route("/img", methods=["POST"])
 async def process_image():
+    print('img triggered')
     data = await request.get_json()
 
     url = data.get('url')
@@ -146,9 +149,12 @@ async def process_image():
 
 @app.route("/imgg", methods=["POST"])
 async def process_url():
+    print('imGG triggered')
     data = await request.get_json()
     url = data.get('url')
+    print(data, url)
     vision = await handle_img_link(url)
+    print(vision)
 
     return vision, 201
 
