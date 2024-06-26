@@ -32,7 +32,7 @@ async def handle_not_found(e):
 
 
 async def handle_img_link(link):
-    thread = await client.beta.threads.create(
+    thread = await aclient.beta.threads.create(
         messages=[
 
             {
@@ -50,18 +50,18 @@ async def handle_img_link(link):
 
 
 async def run_assistant(thread):
-    assistant = await client.beta.assistants.retrieve(VISION_ASSISTANT_ID)
-    run = await client.beta.threads.runs.create(
+    assistant = await aclient.beta.assistants.retrieve(VISION_ASSISTANT_ID)
+    run = await aclient.beta.threads.runs.create(
         thread_id=thread.id,
         assistant_id=assistant.id,
     )
 
     while run.status != "completed":
         await asyncio.sleep(1.5)
-        run = await client.beta.threads.runs.retrieve(
+        run = await aclient.beta.threads.runs.retrieve(
             thread_id=thread.id, run_id=run.id)
 
-    messages = await client.beta.threads.messages.list(thread_id=thread.id)
+    messages = await aclient.beta.threads.messages.list(thread_id=thread.id)
     latest_mssg = messages.data[0].content[0].text.value
     print(f"generated: {latest_mssg}")
     return latest_mssg
