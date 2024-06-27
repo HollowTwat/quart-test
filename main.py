@@ -168,8 +168,8 @@ async def process_url():
     id = data.get('id')
     print(data, url, id, TELETOKEN)
     result = await send_animation_url(TELETOKEN, id, file_url)
-    parsable_result = result.json()
-    print(parsable_result.message_id)
+    # parsable_result = result.json()
+    print(result)
     vision = await handle_img_link(url)
     print(vision)
 
