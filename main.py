@@ -44,6 +44,20 @@ async def send_animation_url(token, chat_id, animation_url):
         async with session.post(url, data=data) as response:
             return await response.json()
 
+
+async def delete_message(token, chat_id, message_id):
+    url = f"https://api.telegram.org/bot{token}/deleteMessage"
+    data = {
+        'chat_id': chat_id,
+        'message_id': message_id
+    }
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, data=data) as response:
+            result = await response.json()
+            return result
+            
+
 async def handle_img_link(link):
     print(link)
     thread = await aclient.beta.threads.create(
@@ -170,10 +184,10 @@ async def process_url():
     result = await send_animation_url(TELETOKEN, id, file_url)
     # parsable_result = result.json()
     message = result.get("result")
-    print("Message ID:", message.get("message_id"))
+    mssg_id = message.get("message_id")
     vision = await handle_img_link(url)
     print(vision)
-
+    rr = await delete_message(TELETOKEN, id, mssg_id)
     return vision, 201
 
 if __name__ == "__main__":
