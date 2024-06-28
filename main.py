@@ -173,16 +173,6 @@ async def process_image():
 
     return jsonify(vision), 201
 
-@app.route("/img2", methods=["POST"])
-async def process_url():
-    print('imG2 triggered')
-    data = await request.get_json()
-    url = data.get('url')
-    print(data, url, id, TELETOKEN)
-    vision = await handle_img_link(url)
-    print(vision)
-    return vision, 201
-    
 @app.route("/imgg", methods=["POST"])
 async def process_url():
     print('imGG triggered')
