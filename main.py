@@ -181,6 +181,16 @@ async def transcribe():
 
     return jsonify(response), 201
 
+@app.route("/txt", methods=["POST"])
+async def process_image():
+    print('txt triggered')
+    data = await request.get_json()
+
+    txt = data.get('txt')
+    assistant_response = await text_input(txt)
+    # vision1 = jsonify(vision).content
+
+    return jsonify(assistant_response), 201
 
 @app.route("/img", methods=["POST"])
 async def process_image():
