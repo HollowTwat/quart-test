@@ -176,7 +176,7 @@ async def transcribe():
 
     response = {
         "transcription": transcription,
-        "assistant_response": assistant_response
+        "assistant_response": str(assistant_response)
     }
 
     return jsonify(response), 201
