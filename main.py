@@ -13,6 +13,7 @@ from quart_compress import Compress
 
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 VISION_ASSISTANT_ID = os.getenv('VISION_ASSISTANT_ID')
+ASSISTANT2_ID = os.getenv('ASSISTANT2_ID')
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 aclient = AsyncOpenAI(api_key=OPENAI_API_KEY)
 openai.api_key = OPENAI_API_KEY
@@ -73,13 +74,31 @@ async def handle_img_link(link):
             },
         ]
     )
-    new_message = await run_assistant(thread)
+    new_message = await run_assistant(thread, VISION_ASSISTANT_ID)
     print(new_message)
     return new_message
 
+async def text_input(input):
+    print(input)
+    thread = await aclient.beta.threads.create(
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": input
+                    }
+                ]
+            }
+        ]
+    )
+    new_message = await run_assistant(thread, ASSISTANT2_ID)
+    print(new_message)
+    return new_message
 
-async def run_assistant(thread):
-    assistant = await aclient.beta.assistants.retrieve(VISION_ASSISTANT_ID)
+async def run_assistant(thread, assistant):
+    assistant = await aclient.beta.assistants.retrieve(assistant)
     run = await aclient.beta.threads.runs.create(
         thread_id=thread.id,
         assistant_id=assistant.id,
@@ -152,7 +171,8 @@ async def transcribe():
 
     url = data.get('url')
     transcription = await transcribe_audio_from_url(url)
-    assistant_response = await handle_assistant_response(transcription)
+    # assistant_response = await handle_assistant_response(transcription)
+    assistant_response = await text_input(transcription)
 
     response = {
         "transcription": transcription,
