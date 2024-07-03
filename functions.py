@@ -113,6 +113,18 @@ async def send_sticker(token, chat_id, sticker_id):
         async with session.post(url, data=data) as response:
             return await response.json()
 
+async def send_mssg(token, chat_id, text):
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    data = {
+        'chat_id': chat_id,
+        'text': text
+    }
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, data=data) as response:
+            return await response.json()
+
+
 
 async def delete_message(token, chat_id, message_id):
     url = f"https://api.telegram.org/bot{token}/deleteMessage"
