@@ -157,6 +157,7 @@ async def process_url():
     print(data, url, id, TELETOKEN)
     # result = await send_animation_url(TELETOKEN, id, file_url)
     result = await send_sticker(TELETOKEN, id, sticker_id)
+    print(result)
     # parsable_result = result.json()
     message = result.get("result")
     mssg_id = message.get("message_id")
