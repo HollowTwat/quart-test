@@ -119,7 +119,7 @@ async def transcribe():
     # assistant_response = await text_input(transcription)
     assistant_response = await generate_response(transcription, id, VISION_ASSISTANT_ID)
     
-    rr = await delete_message(TELETOKEN, id, mssg_id) 
+    await delete_message(TELETOKEN, id, mssg_id) 
     # response = {
     #     "transcription": transcription,
     #     "assistant_response": str(assistant_response)
@@ -140,7 +140,7 @@ async def process_txt():
     
     assistant_response = await generate_response(txt, id, VISION_ASSISTANT_ID)
     # vision1 = jsonify(vision).content
-    rr = await delete_message(TELETOKEN, id, mssg_id)
+    await delete_message(TELETOKEN, id, mssg_id)
     return assistant_response, 201
 
 
@@ -169,7 +169,7 @@ async def process_imgg():
     mssg_id = message.get("message_id")
     vision = await handle_img_link(url)
     print(vision)
-    rr = await delete_message(TELETOKEN, id, mssg_id)
+    await delete_message(TELETOKEN, id, mssg_id)
     return vision, 201
 
 
@@ -186,7 +186,7 @@ async def image_proc():
 
     vision = await process_url(url, id, VISION_ASSISTANT_ID)
 
-    rr = await delete_message(TELETOKEN, id, mssg_id)
+    await delete_message(TELETOKEN, id, mssg_id)
     return vision, 201
 
 if __name__ == "__main__":
