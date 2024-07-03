@@ -11,7 +11,7 @@ import aiohttp
 import shelve
 from quart_compress import Compress
 
-sticker_id = "CAACAgIAAxkBAAICDWaEloYcBZ6ssNJnFbBFiXKKc1o_AAIZQQACoiVxSEycqcFadmiANQQ"
+sticker_id = "CAACAgIAAxkBAAIE62aF2oFJ5Ltu03_xMZWrC40hoAABzAACGUEAAqIlcUhMnKnBWnZogDUE"
 
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 VISION_ASSISTANT_ID = os.getenv('VISION_ASSISTANT_ID')
