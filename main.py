@@ -111,7 +111,7 @@ async def transcribe():
     url = data.get('url')
     id = data.get('id')
     transcription = await transcribe_audio_from_url(url)
-    await send_mssg(TELETOKEN, id, transcription)
+    await send_mssg(TELETOKEN, id, f"Транскрипция: {transcription}")
     result = await send_sticker(TELETOKEN, id, sticker_id)
     message = result.get("result")
     mssg_id = message.get("message_id")
