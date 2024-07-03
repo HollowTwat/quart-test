@@ -112,7 +112,7 @@ async def transcribe():
     transcription = await transcribe_audio_from_url(url)
     # assistant_response = await handle_assistant_response(transcription)
     # assistant_response = await text_input(transcription)
-    assistant_response = await generate_response(url, id, VISION_ASSISTANT_ID)
+    assistant_response = await generate_response(transcription, id, VISION_ASSISTANT_ID)
 
     response = {
         "transcription": transcription,
