@@ -111,10 +111,15 @@ async def transcribe():
     url = data.get('url')
     id = data.get('id')
     transcription = await transcribe_audio_from_url(url)
+
+    result = await send_sticker(TELETOKEN, id, sticker_id)
+    message = result.get("result")
+    mssg_id = message.get("message_id")
     # assistant_response = await handle_assistant_response(transcription)
     # assistant_response = await text_input(transcription)
     assistant_response = await generate_response(transcription, id, VISION_ASSISTANT_ID)
-
+    
+    rr = await delete_message(TELETOKEN, id, mssg_id) 
     response = {
         "transcription": transcription,
         "assistant_response": str(assistant_response)
@@ -127,12 +132,15 @@ async def transcribe():
 async def process_txt():
     print('txt triggered')
     data = await request.get_json()
-
     txt = data.get('txt')
     id = data.get('id')
+    result = await send_sticker(TELETOKEN, id, sticker_id)
+    message = result.get("result")
+    mssg_id = message.get("message_id")
+    
     assistant_response = await generate_response(txt, id, VISION_ASSISTANT_ID)
     # vision1 = jsonify(vision).content
-
+    rr = await delete_message(TELETOKEN, id, mssg_id)
     return jsonify(assistant_response), 201
 
 
@@ -157,8 +165,6 @@ async def process_imgg():
     print(data, url, id, TELETOKEN)
     # result = await send_animation_url(TELETOKEN, id, file_url)
     result = await send_sticker(TELETOKEN, id, sticker_id)
-    print(result)
-    # parsable_result = result.json()
     message = result.get("result")
     mssg_id = message.get("message_id")
     vision = await handle_img_link(url)
@@ -174,7 +180,7 @@ async def image_proc():
     url = data.get('url')
     id = data.get('id')
     print(data, url, id, TELETOKEN)
-    result = await send_animation_url(TELETOKEN, id, file_url)
+    result = await send_sticker(TELETOKEN, id, sticker_id)
     message = result.get("result")
     mssg_id = message.get("message_id")
 
