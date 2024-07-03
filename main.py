@@ -1,5 +1,5 @@
 from quart import Quart, request, jsonify, render_template
-from functions import use_vision64, use_vision64_from_url, encode_image, send_image_to_gpt4_vision, check_if_thread_exists, store_thread, remove_thread, send_animation_url, delete_message, transcribe_audio, transcribe_audio_from_url, run_assistant, handle_assistant_response, process_url, generate_response
+from functions import use_vision64, use_vision64_from_url, encode_image, send_image_to_gpt4_vision, send_sticker, check_if_thread_exists, store_thread, remove_thread, send_animation_url, delete_message, transcribe_audio, transcribe_audio_from_url, run_assistant, handle_assistant_response, process_url, generate_response
 # from bot2 import OPENAI_API_KEY, handle_assistant_response, encode_image, use_vision64
 import openai
 from openai import AsyncOpenAI
@@ -11,6 +11,7 @@ import aiohttp
 import shelve
 from quart_compress import Compress
 
+sticker_id = "CAACAgIAAxkBAAICDWaEloYcBZ6ssNJnFbBFiXKKc1o_AAIZQQACoiVxSEycqcFadmiANQQ"
 
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 VISION_ASSISTANT_ID = os.getenv('VISION_ASSISTANT_ID')
@@ -98,9 +99,9 @@ async def get_user(user_id):
 @app.route("/remove", methods=["POST"])
 async def thread_remove():
     data = await request.get_json()
-    usr_id = data.get('id')
-    await remove_thread(usr_id)
-    return 201
+    id = data.get('id')
+    await remove_thread(id)
+    return "removed", 201
 
 
 @app.route("/oga", methods=["POST"])
@@ -154,7 +155,8 @@ async def process_url():
     url = data.get('url')
     id = data.get('id')
     print(data, url, id, TELETOKEN)
-    result = await send_animation_url(TELETOKEN, id, file_url)
+    # result = await send_animation_url(TELETOKEN, id, file_url)
+    result = await send_sticker(TELETOKEN, id, sticker_id)
     # parsable_result = result.json()
     message = result.get("result")
     mssg_id = message.get("message_id")
