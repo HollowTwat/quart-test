@@ -1,5 +1,5 @@
 from quart import Quart, request, jsonify, render_template
-from functions import use_vision64, use_vision64_from_url, encode_image, send_image_to_gpt4_vision, check_if_thread_exists, store_thread, remove_thread, send_animation_url, delete_message, transcribe_audio, transcribe_audio_from_url, run_assistant, handle_assistant_response, process_url
+from functions import use_vision64, use_vision64_from_url, encode_image, send_image_to_gpt4_vision, check_if_thread_exists, store_thread, remove_thread, send_animation_url, delete_message, transcribe_audio, transcribe_audio_from_url, run_assistant, handle_assistant_response, process_url, generate_response
 # from bot2 import OPENAI_API_KEY, handle_assistant_response, encode_image, use_vision64
 import openai
 from openai import AsyncOpenAI
@@ -108,9 +108,11 @@ async def transcribe():
     data = await request.get_json()
 
     url = data.get('url')
+    id = data.get('id')
     transcription = await transcribe_audio_from_url(url)
     # assistant_response = await handle_assistant_response(transcription)
-    assistant_response = await text_input(transcription)
+    # assistant_response = await text_input(transcription)
+    assistant_response = await generate_response(url, id, VISION_ASSISTANT_ID)
 
     response = {
         "transcription": transcription,
@@ -126,7 +128,8 @@ async def process_txt():
     data = await request.get_json()
 
     txt = data.get('txt')
-    assistant_response = await text_input(txt)
+    id = data.get('id')
+    assistant_response = await generate_response(txt, id, VISION_ASSISTANT_ID)
     # vision1 = jsonify(vision).content
 
     return jsonify(assistant_response), 201
@@ -157,6 +160,23 @@ async def process_url():
     mssg_id = message.get("message_id")
     vision = await handle_img_link(url)
     print(vision)
+    rr = await delete_message(TELETOKEN, id, mssg_id)
+    return vision, 201
+
+
+@app.route("/imggg", methods=["POST"])
+async def image_proc():
+    print('imGGG triggered')
+    data = await request.get_json()
+    url = data.get('url')
+    id = data.get('id')
+    print(data, url, id, TELETOKEN)
+    result = await send_animation_url(TELETOKEN, id, file_url)
+    message = result.get("result")
+    mssg_id = message.get("message_id")
+
+    vision = await process_url(url, id, VISION_ASSISTANT_ID)
+
     rr = await delete_message(TELETOKEN, id, mssg_id)
     return vision, 201
 
