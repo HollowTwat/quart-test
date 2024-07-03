@@ -1,5 +1,5 @@
 from quart import Quart, request, jsonify, render_template
-from functions import use_vision64, use_vision64_from_url, encode_image, send_image_to_gpt4_vision, send_sticker, check_if_thread_exists, store_thread, remove_thread, send_animation_url, delete_message, transcribe_audio, transcribe_audio_from_url, run_assistant, handle_assistant_response, process_url, generate_response
+from functions import use_vision64, use_vision64_from_url, encode_image, send_image_to_gpt4_vision, send_sticker, send_mssg, check_if_thread_exists, store_thread, remove_thread, send_animation_url, delete_message, transcribe_audio, transcribe_audio_from_url, run_assistant, handle_assistant_response, process_url, generate_response
 # from bot2 import OPENAI_API_KEY, handle_assistant_response, encode_image, use_vision64
 import openai
 from openai import AsyncOpenAI
@@ -111,7 +111,7 @@ async def transcribe():
     url = data.get('url')
     id = data.get('id')
     transcription = await transcribe_audio_from_url(url)
-
+    await send_mssg(TELETOKEN, id, transcription)
     result = await send_sticker(TELETOKEN, id, sticker_id)
     message = result.get("result")
     mssg_id = message.get("message_id")
