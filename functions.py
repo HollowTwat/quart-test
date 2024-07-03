@@ -106,7 +106,7 @@ async def send_sticker(token, chat_id, sticker_id):
     url = f"https://api.telegram.org/bot{token}/sendSticker"
     data = {
         'chat_id': chat_id,
-        'item_id': sticker_id
+        "sticker": sticker_id
     }
 
     async with aiohttp.ClientSession() as session:
