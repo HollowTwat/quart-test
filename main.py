@@ -149,7 +149,7 @@ async def process_image():
 
 
 @app.route("/imgg", methods=["POST"])
-async def process_url():
+async def process_imgg():
     print('imGG triggered')
     data = await request.get_json()
     url = data.get('url')
