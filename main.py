@@ -120,12 +120,12 @@ async def transcribe():
     assistant_response = await generate_response(transcription, id, VISION_ASSISTANT_ID)
     
     rr = await delete_message(TELETOKEN, id, mssg_id) 
-    response = {
-        "transcription": transcription,
-        "assistant_response": str(assistant_response)
-    }
+    # response = {
+    #     "transcription": transcription,
+    #     "assistant_response": str(assistant_response)
+    # }
 
-    return jsonify(response), 201
+    return assistant_response, 201
 
 
 @app.route("/txt", methods=["POST"])
@@ -141,7 +141,7 @@ async def process_txt():
     assistant_response = await generate_response(txt, id, VISION_ASSISTANT_ID)
     # vision1 = jsonify(vision).content
     rr = await delete_message(TELETOKEN, id, mssg_id)
-    return jsonify(assistant_response), 201
+    return assistant_response, 201
 
 
 @app.route("/img", methods=["POST"])
