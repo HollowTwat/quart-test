@@ -1,6 +1,4 @@
 from quart import Quart, request, jsonify, render_template
-from functions import use_vision64, use_vision64_from_url, encode_image, send_image_to_gpt4_vision
-# from bot2 import OPENAI_API_KEY, handle_assistant_response, encode_image, use_vision64
 import openai
 from openai import AsyncOpenAI
 import requests
