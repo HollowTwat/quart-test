@@ -1,5 +1,5 @@
 from quart import Quart, request, jsonify, render_template
-from functions import use_vision64, use_vision64_from_url, encode_image, send_image_to_gpt4_vision
+from functions import use_vision64, use_vision64_from_url, encode_image, send_image_to_gpt4_vision, check_if_thread_exists, store_thread, remove_thread, send_animation_url, delete_message, transcribe_audio, transcribe_audio_from_url, run_assistant, handle_assistant_response, process_url
 # from bot2 import OPENAI_API_KEY, handle_assistant_response, encode_image, use_vision64
 import openai
 from openai import AsyncOpenAI
@@ -8,6 +8,7 @@ import base64
 import os
 import asyncio
 import aiohttp
+import shelve
 from quart_compress import Compress
 
 
@@ -34,31 +35,6 @@ async def handle_not_found(e):
     return '<h1>😦</h1><b>404</b> Not found.<p><a href="/">return</a>'
 
 
-async def send_animation_url(token, chat_id, animation_url):
-    url = f"https://api.telegram.org/bot{token}/sendAnimation"
-    data = {
-        'chat_id': chat_id,
-        'animation': animation_url
-    }
-
-    async with aiohttp.ClientSession() as session:
-        async with session.post(url, data=data) as response:
-            return await response.json()
-
-
-async def delete_message(token, chat_id, message_id):
-    url = f"https://api.telegram.org/bot{token}/deleteMessage"
-    data = {
-        'chat_id': chat_id,
-        'message_id': message_id
-    }
-
-    async with aiohttp.ClientSession() as session:
-        async with session.post(url, data=data) as response:
-            result = await response.json()
-            return result
-            
-
 async def handle_img_link(link):
     print(link)
     thread = await aclient.beta.threads.create(
@@ -78,6 +54,7 @@ async def handle_img_link(link):
     print(new_message)
     return new_message
 
+
 async def text_input(input):
     print(input)
     thread = await aclient.beta.threads.create(
@@ -96,53 +73,6 @@ async def text_input(input):
     new_message = await run_assistant(thread, ASSISTANT2_ID)
     print(new_message)
     return new_message
-
-async def run_assistant(thread, assistant):
-    assistant = await aclient.beta.assistants.retrieve(assistant)
-    run = await aclient.beta.threads.runs.create(
-        thread_id=thread.id,
-        assistant_id=assistant.id,
-    )
-
-    while run.status != "completed":
-        await asyncio.sleep(1.5)
-        run = await aclient.beta.threads.runs.retrieve(
-            thread_id=thread.id, run_id=run.id)
-
-    messages = await aclient.beta.threads.messages.list(thread_id=thread.id)
-    latest_mssg = messages.data[0].content[0].text.value
-    print(f"generated: {latest_mssg}")
-    return latest_mssg
-
-
-async def handle_assistant_response(prompt):
-    response = client.completions.create(
-        model="gpt-3.5-turbo-instruct",
-        prompt=prompt,
-        max_tokens=150
-    )
-    return response.choices[0].text.strip()
-
-
-async def transcribe_audio(file_path):
-    with open(file_path, 'rb') as audio_file:
-        response = openai.audio.transcriptions.create(
-            model="whisper-1",
-            file=audio_file
-        )
-    return response.text
-
-
-async def transcribe_audio_from_url(url):
-    response = requests.get(url)
-    if response.status_code == 200:
-        temp_file_path = 'temp_audio.ogg'
-        with open(temp_file_path, 'wb') as f:
-            f.write(response.content)
-        transcription = await transcribe_audio(temp_file_path)
-        return transcription
-    else:
-        raise Exception(f"Failed to fetch audio from URL: {response.status}")
 
 
 @app.route("/")
@@ -165,6 +95,14 @@ async def get_user(user_id):
     return jsonify(user_data), 200
 
 
+@app.route("/remove", methods=["POST"])
+async def thread_remove():
+    data = await request.get_json()
+    usr_id = data.get('id')
+    await remove_thread(usr_id)
+    return 201
+
+
 @app.route("/oga", methods=["POST"])
 async def transcribe():
     data = await request.get_json()
@@ -181,6 +119,7 @@ async def transcribe():
 
     return jsonify(response), 201
 
+
 @app.route("/txt", methods=["POST"])
 async def process_txt():
     print('txt triggered')
@@ -192,6 +131,7 @@ async def process_txt():
 
     return jsonify(assistant_response), 201
 
+
 @app.route("/img", methods=["POST"])
 async def process_image():
     print('img triggered')
@@ -202,6 +142,7 @@ async def process_image():
     # vision1 = jsonify(vision).content
 
     return jsonify(vision), 201
+
 
 @app.route("/imgg", methods=["POST"])
 async def process_url():
