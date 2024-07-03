@@ -22,14 +22,14 @@ async def generate_response(message_body, usr_id, assistant):
 
     if thread_id is None:
         print(f"Creating new thread for {usr_id}")
-        thread = await client.beta.threads.create()
+        thread = await aclient.beta.threads.create()
         await store_thread(usr_id, thread.id)
         thread_id = thread.id
     else:
         print(f"Retrieving existing thread {usr_id}")
-        thread = await client.beta.threads.retrieve(thread_id)
+        thread = await aclient.beta.threads.retrieve(thread_id)
 
-    message = await client.beta.threads.messages.create(
+    message = await aclient.beta.threads.messages.create(
         thread_id=thread_id,
         role="user",
         content=message_body,
@@ -44,14 +44,14 @@ async def process_url(url, usr_id, assistant):
 
     if thread_id is None:
         print(f"Creating new thread for {usr_id}")
-        thread = await client.beta.threads.create()
+        thread = await  aclient.beta.threads.create()
         await store_thread(usr_id, thread.id)
         thread_id = thread.id
     else:
         print(f"Retrieving existing thread {usr_id}")
-        thread = await client.beta.threads.retrieve(thread_id)
+        thread = await  aclient.beta.threads.retrieve(thread_id)
     print(url)
-    thread = await client.beta.threads.create(
+    thread = await  aclient.beta.threads.create(
         messages=[
 
             {
@@ -116,18 +116,18 @@ async def delete_message(token, chat_id, message_id):
 
 
 async def run_assistant(thread, assistant):
-    assistant = await aclient.beta.assistants.retrieve(assistant)
-    run = await aclient.beta.threads.runs.create(
+    assistant = await  aclient.beta.assistants.retrieve(assistant)
+    run = await  aclient.beta.threads.runs.create(
         thread_id=thread.id,
         assistant_id=assistant.id,
     )
 
     while run.status != "completed":
         await asyncio.sleep(1.5)
-        run = await aclient.beta.threads.runs.retrieve(
+        run = await  aclient.beta.threads.runs.retrieve(
             thread_id=thread.id, run_id=run.id)
 
-    messages = await aclient.beta.threads.messages.list(thread_id=thread.id)
+    messages = await  aclient.beta.threads.messages.list(thread_id=thread.id)
     latest_mssg = messages.data[0].content[0].text.value
     print(f"generated: {latest_mssg}")
     return latest_mssg
@@ -236,14 +236,14 @@ async def generate_response(message_body, usr_id, assistant):
 
     if thread_id is None:
         print(f"Creating new thread for {usr_id}")
-        thread = await client.beta.threads.create()
+        thread = await  aclient.beta.threads.create()
         await store_thread(usr_id, thread.id)
         thread_id = thread.id
     else:
         print(f"Retrieving existing thread {usr_id}")
-        thread = await client.beta.threads.retrieve(thread_id)
+        thread = await  aclient.beta.threads.retrieve(thread_id)
 
-    message = await client.beta.threads.messages.create(
+    message = await  aclient.beta.threads.messages.create(
         thread_id=thread_id,
         role="user",
         content=message_body,
