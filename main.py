@@ -189,6 +189,38 @@ async def image_proc():
     await delete_message(TELETOKEN, id, mssg_id)
     return vision, 201
 
+@app.route("/edit_oga", methods=["POST"])
+async def edit_audio():
+    data = await request.get_json()
+
+    url = data.get('url')
+    id = data.get('id')
+    old = data.get('oldmeal')
+    transcription = await transcribe_audio_from_url(url)
+    await send_mssg(TELETOKEN, id, f"Транскрипция: {transcription}")
+    result = await send_sticker(TELETOKEN, id, sticker_id)
+    message = result.get("result")
+    mssg_id = message.get("message_id")
+    assistant_response = await generate_response(f"Старый прием пищи: {old} Запрос: {transcription}", id, VISION_ASSISTANT_ID)
+    
+    await delete_message(TELETOKEN, id, mssg_id) 
+    return assistant_response, 201
+
+@app.route("/edit_txt", methods=["POST"])
+async def edit_txt():
+    print('txt triggered')
+    data = await request.get_json()
+    txt = data.get('txt')
+    id = data.get('id')
+    old = data.get('oldmeal')
+    result = await send_sticker(TELETOKEN, id, sticker_id)
+    message = result.get("result")
+    mssg_id = message.get("message_id")
+    
+    assistant_response = await generate_response(f"Старый прием пищи: {old} Запрос: {txt}", id, VISION_ASSISTANT_ID)
+    await delete_message(TELETOKEN, id, mssg_id)
+    return assistant_response, 201
+
 if __name__ == "__main__":
     # app.run(port=8080, debug=True)
     app.run(host="0.0.0.0", port=PORT, debug=True)
