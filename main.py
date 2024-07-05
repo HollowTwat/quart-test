@@ -191,6 +191,7 @@ async def image_proc():
 
 @app.route("/edit_oga", methods=["POST"])
 async def edit_audio():
+    print('edit_oga triggered')
     data = await request.get_json()
 
     url = data.get('url')
@@ -208,11 +209,12 @@ async def edit_audio():
 
 @app.route("/edit_txt", methods=["POST"])
 async def edit_txt():
-    print('txt triggered')
+    print('edit_txt triggered')
     data = await request.get_json()
     txt = data.get('txt')
     id = data.get('id')
     old = data.get('oldmeal')
+    print(txt, id, old)
     result = await send_sticker(TELETOKEN, id, sticker_id)
     message = result.get("result")
     mssg_id = message.get("message_id")
