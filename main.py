@@ -202,7 +202,7 @@ async def edit_audio():
     result = await send_sticker(TELETOKEN, id, sticker_id)
     message = result.get("result")
     mssg_id = message.get("message_id")
-    assistant_response = await generate_response(f"Старый прием пищи: {old} Запрос: {transcription}", id, VISION_ASSISTANT_ID)
+    assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {transcription}", id, VISION_ASSISTANT_ID)
     
     await delete_message(TELETOKEN, id, mssg_id) 
     return assistant_response, 201
@@ -219,7 +219,7 @@ async def edit_txt():
     message = result.get("result")
     mssg_id = message.get("message_id")
     
-    assistant_response = await generate_response(f"Старый прием пищи: {old} Запрос: {txt}", id, VISION_ASSISTANT_ID)
+    assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {txt}", id, VISION_ASSISTANT_ID)
     await delete_message(TELETOKEN, id, mssg_id)
     return assistant_response, 201
 
