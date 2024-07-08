@@ -11,7 +11,7 @@ import aiohttp
 import shelve
 from quart_compress import Compress
 
-sticker_id = "CAACAgIAAxkBAAIE62aF2oFJ5Ltu03_xMZWrC40hoAABzAACGUEAAqIlcUhMnKnBWnZogDUE"
+sticker_id = "AAMCAgADGQEAAgfyZoxstWDk9d93WkMmV464d4ip2vgAAgFNAAIDT2hIOoYYy4MfDi0BAAdtAAM1BA"
 #"CAACAgIAAxkBAAIE62aF2oFJ5Ltu03_xMZWrC40hoAABzAACGUEAAqIlcUhMnKnBWnZogDUE" AAMCAgADGQEAAgfyZoxstWDk9d93WkMmV464d4ip2vgAAgFNAAIDT2hIOoYYy4MfDi0BAAdtAAM1BA
 
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
@@ -114,6 +114,7 @@ async def transcribe():
     transcription = await transcribe_audio_from_url(url)
     await send_mssg(TELETOKEN, id, f"Транскрипция: {transcription}")
     result = await send_sticker(TELETOKEN, id, sticker_id)
+    print(result)
     message = result.get("result")
     mssg_id = message.get("message_id")
     # assistant_response = await handle_assistant_response(transcription)
