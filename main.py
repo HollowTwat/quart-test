@@ -10,6 +10,8 @@ import asyncio
 import aiohttp
 import shelve
 from quart_compress import Compress
+import random
+from sale_stickers import STICKERLIST
 
 sticker_id = "CAACAgIAAxkBAAIHp2aLyyiL4UY-FICRxHkMxTBvi9jkAAIXUAAC8R5hSFFY0DLWfFtzNQQ" 
 #"CAACAgIAAxkBAAIE62aF2oFJ5Ltu03_xMZWrC40hoAABzAACGUEAAqIlcUhMnKnBWnZogDUE" CAACAgIAAxkBAAIINGaMcaRe9fVOeaZTFZyWWWM6CrnHAAIBTQACA09oSDqGGMuDHw4tNQQ
@@ -113,7 +115,7 @@ async def transcribe():
     id = data.get('id')
     transcription = await transcribe_audio_from_url(url)
     await send_mssg(TELETOKEN, id, f"Транскрипция: {transcription}")
-    result = await send_sticker(TELETOKEN, id, sticker_id)
+    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     print(result)
     message = result.get("result")
     mssg_id = message.get("message_id")
@@ -136,7 +138,7 @@ async def process_txt():
     data = await request.get_json()
     txt = data.get('txt')
     id = data.get('id')
-    result = await send_sticker(TELETOKEN, id, sticker_id)
+    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     message = result.get("result")
     mssg_id = message.get("message_id")
     
@@ -166,7 +168,7 @@ async def process_imgg():
     id = data.get('id')
     print(data, url, id, TELETOKEN)
     # result = await send_animation_url(TELETOKEN, id, file_url)
-    result = await send_sticker(TELETOKEN, id, sticker_id)
+    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     message = result.get("result")
     mssg_id = message.get("message_id")
     vision = await handle_img_link(url)
@@ -182,7 +184,7 @@ async def image_proc():
     url = data.get('url')
     id = data.get('id')
     print(data, url, id, TELETOKEN)
-    result = await send_sticker(TELETOKEN, id, sticker_id)
+    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     message = result.get("result")
     mssg_id = message.get("message_id")
 
@@ -201,7 +203,7 @@ async def edit_audio():
     old = data.get('oldmeal')
     transcription = await transcribe_audio_from_url(url)
     await send_mssg(TELETOKEN, id, f"Транскрипция: {transcription}")
-    result = await send_sticker(TELETOKEN, id, sticker_id)
+    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     message = result.get("result")
     mssg_id = message.get("message_id")
     assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {transcription}", id, VISION_ASSISTANT_ID)
@@ -217,7 +219,7 @@ async def edit_txt():
     id = data.get('id')
     old = data.get('oldmeal')
     print(txt, id, old)
-    result = await send_sticker(TELETOKEN, id, sticker_id)
+    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     message = result.get("result")
     mssg_id = message.get("message_id")
     
