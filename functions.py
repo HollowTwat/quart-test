@@ -28,13 +28,14 @@ async def generate_response(message_body, usr_id, assistant):
     else:
         print(f"Retrieving existing thread {usr_id}")
         thread = await aclient.beta.threads.retrieve(thread_id)
-
+        
+    print(thread_id)
     message = await aclient.beta.threads.messages.create(
         thread_id=thread_id,
         role="user",
         content=message_body,
     )
-    print(message)
+    print(f"message: {message}")
 
     new_message = await run_assistant(thread, assistant)
     return new_message
@@ -140,6 +141,7 @@ async def delete_message(token, chat_id, message_id):
 
 
 async def run_assistant(thread, assistant):
+    print("run_assistant hit")
     assistant = await  aclient.beta.assistants.retrieve(assistant)
     run = await  aclient.beta.threads.runs.create(
         thread_id=thread.id,
@@ -147,6 +149,7 @@ async def run_assistant(thread, assistant):
     )
 
     while run.status != "completed":
+        print(run.status)
         await asyncio.sleep(1.5)
         run = await  aclient.beta.threads.runs.retrieve(
             thread_id=thread.id, run_id=run.id)
