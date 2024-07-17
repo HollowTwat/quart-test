@@ -267,6 +267,7 @@ async def run_city(message_body, assistant):
         content=message_body
     )
     new_message = await run_assistant(thread, assistant)
+    return new_message
 
 async def generate_response(message_body, usr_id, assistant):
     thread_id = await check_if_thread_exists(usr_id)
