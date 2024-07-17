@@ -112,7 +112,8 @@ async def city_quip():
     data = await request.get_json()
     goal = data.get('goal')
     city = data.get('city')
-    response = await run_city(goal, city, CITY_ASSISTANT_ID)
+    message_body = f"цель {goal} город {city}"
+    response = await run_city(message_body, CITY_ASSISTANT_ID)
     return response, 201
 
 
