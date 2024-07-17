@@ -1,5 +1,5 @@
 from quart import Quart, request, jsonify, render_template
-from functions import use_vision64, use_vision64_from_url, encode_image, send_image_to_gpt4_vision, send_sticker, send_mssg, check_if_thread_exists, store_thread, remove_thread, send_animation_url, delete_message, transcribe_audio, transcribe_audio_from_url, run_assistant, handle_assistant_response, process_url, generate_response
+from functions import run_city, use_vision64, use_vision64_from_url, encode_image, send_image_to_gpt4_vision, send_sticker, send_mssg, check_if_thread_exists, store_thread, remove_thread, send_animation_url, delete_message, transcribe_audio, transcribe_audio_from_url, run_assistant, handle_assistant_response, process_url, generate_response
 # from bot2 import OPENAI_API_KEY, handle_assistant_response, encode_image, use_vision64
 import openai
 from openai import AsyncOpenAI
@@ -18,6 +18,7 @@ sticker_id = "CAACAgIAAxkBAAIHp2aLyyiL4UY-FICRxHkMxTBvi9jkAAIXUAAC8R5hSFFY0DLWfF
 
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 VISION_ASSISTANT_ID = os.getenv('VISION_ASSISTANT_ID')
+CITY_ASSISTANT_ID = os.getenv('CITY_ASSISTANT_ID')
 ASSISTANT2_ID = os.getenv('ASSISTANT2_ID')
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 aclient = AsyncOpenAI(api_key=OPENAI_API_KEY)
@@ -105,6 +106,14 @@ async def thread_remove():
     id = data.get('id')
     await remove_thread(id)
     return "removed", 201
+
+@app.route("/city", methods=["POST"])
+async def city_quip():
+    data = await request.get_json()
+    goal = data.get('goal')
+    city = data.get('city')
+    response = await run_city(goal, city, CITY_ASSISTANT_ID)
+    return response, 201
 
 
 @app.route("/oga", methods=["POST"])
