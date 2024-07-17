@@ -10,6 +10,7 @@ import shelve
 
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 VISION_ASSISTANT_ID = os.getenv('VISION_ASSISTANT_ID')
+CITY_ASSISTANT_ID = os.getenv('CITY_ASSISTANT_ID')
 ASSISTANT2_ID = os.getenv('ASSISTANT2_ID')
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 aclient = AsyncOpenAI(api_key=OPENAI_API_KEY)
@@ -256,6 +257,16 @@ async def transcribe_audio_from_url(url):
     else:
         raise Exception(f"Failed to fetch audio from URL: {response.status}")
 
+async def run_city(message_body, assistant):
+    thread = await aclient.beta.threads.create()
+    thread_id = thread.id
+    
+    message = await aclient.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=message_body
+    )
+    new_message = await run_assistant(thread, assistant)
 
 async def generate_response(message_body, usr_id, assistant):
     thread_id = await check_if_thread_exists(usr_id)
