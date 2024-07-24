@@ -241,8 +241,8 @@ async def edit_txt():
 async def yapp_with_input():
     print('day1_yapp triggered')
     data = await request.get_json()
-    print(data)
-    user_info = data.get('user_info')
+    print(str(data))
+    user_info = data.get_json('user_info')
     id = data.get('id')
     question = data.get('question')
     print(f"{user_info}, id: {id}, question {question}")
