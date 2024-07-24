@@ -241,11 +241,12 @@ async def edit_txt():
 async def yapp_with_input():
     print('day1_yapp triggered')
     data = await request.get_json()
-    user_info = data.get_json('user_info')
+    print(data)
+    user_info = data.get('user_info')
     id = data.get('id')
     question = data.get('question')
     print(f"{user_info}, id: {id}, question {question}")
-    return "user_info", 201
+    return user_info, 201
 
 if __name__ == "__main__":
     # app.run(port=8080, debug=True)
