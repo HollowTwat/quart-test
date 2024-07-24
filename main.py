@@ -237,6 +237,16 @@ async def edit_txt():
     await delete_message(TELETOKEN, id, mssg_id)
     return assistant_response, 201
 
+@app.route("/day1/yapp", methods=["POST"])
+async def yapp_with_input():
+    print('day1_yapp triggered')
+    data = await request.get_json()
+    user_info = data.get_json('user_info')
+    id = data.get('id')
+    question = data.get('question')
+    print(f"{user_info}, id: {id}, question {question}")
+    return "user_info", 201
+
 if __name__ == "__main__":
     # app.run(port=8080, debug=True)
     app.run(host="0.0.0.0", port=PORT, debug=True)
