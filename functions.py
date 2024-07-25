@@ -291,3 +291,33 @@ async def generate_response(message_body, usr_id, assistant):
 
     new_message = await run_assistant(thread, assistant)
     return new_message
+
+async def create_str(data):
+    gender = data.get('user_info_gender')
+    age = data.get('user_info_age')
+    height = data.get('user_info_height')
+    weight = data.get('user_info_weight')
+    bmr = data.get('bmr')
+    tdee = data.get('tdee')
+    bmi = data.get('user_info_bmi')
+    goal = data.get('user_info_goal')
+    weight_change = data.get('user_info_weight_change')
+    pregnancy = data.get('user_info_pregnancy')
+    breastfeeding = data.get('user_info_breastfeeding')
+    bans = data.get('user_info_meals_ban')
+    meal_amount = data.get('user_info_meal_amount')
+    extra = data.get('user_info_meals_extra')
+    stress = data.get('user_info_stress')
+    booze = data.get('user_info_booze')
+    water = data.get('user_info_water')
+    sleep = data.get('user_info_sleep')
+    gym = data.get('user_info_gym_hrs')
+    cardio = data.get('user_info_excersise_hrs')
+    if goal == "+":
+        goalstr = "Набрать"
+    elif goal == "-":
+        goalstr = "Сбросить"
+    elif goal == "=":
+        goalstr = "Сохранить вес и здоровье"
+    requeststring = f"Я {gender} мне {age} лет, мой рост {height} см, мой вес {weight} кг. Мой bmr = {bmr}, мой tdee = {tdee}, мой bmi = {bmi}, моя цель {goalstr} {weight_change}, я оцениваю свою уровень стресса как: {stress}. Дополнительная важная информация: Статус беременности: {pregnancy}, статус кормления грудью: {breastfeeding}, Мои аллергии: {bans}, Я ем {meal_amount} раз в день, доп информация о приемах еды при наличии: {extra}, Я пью {booze} бокалов алкоголя в неделю, и {water} стаканов воды в день. Сплю в среднем {sleep} часов. Моя физическая нагрузка: {gym} часов силовых упражнений и {cardio} часов кардио"
+    return requeststring
