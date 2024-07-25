@@ -252,8 +252,8 @@ async def yapp_with_input():
 
 @app.route("/test", methods=["POST"])
 async def test():
-    print(request)
-    return request, 201
+    data = request.get_json()
+    return data, 201
 
 if __name__ == "__main__":
     # app.run(port=8080, debug=True)
