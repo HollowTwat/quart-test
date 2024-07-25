@@ -195,6 +195,7 @@ async def process_imgg():
 async def image_proc():
     print('imGGG triggered')
     data = await request.get_json()
+    print(data)
     url = data.get('url')
     id = data.get('id')
     print(data, url, id, TELETOKEN)
