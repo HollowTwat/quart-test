@@ -36,8 +36,8 @@ app.config["SESSION_REVERSE_PROXY"] = True
 Compress(app)
 
 
-@app.listen(PORT, '::', ()
-    print(f"Server listening on [::]{PORT}")
+# @app.listen(PORT, '::', ()
+#     print(f"Server listening on [::]{PORT}")
 
 @app.errorhandler(404)
 async def handle_not_found(e):
