@@ -195,7 +195,7 @@ async def process_imgg():
 async def image_proc():
     print('imGGG triggered')
     data = await request.get_json()
-    print(request, request.get())
+    print(request)
     print(data)
     url = data.get('url')
     id = data.get('id')
@@ -259,7 +259,7 @@ async def yapp_with_input():
 async def test():
     data = await request.get_json()
     print(data)
-    return "ok", 201
+    return data, 201
 
 if __name__ == "__main__":
     # app.run(port=8080, debug=True)
