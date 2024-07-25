@@ -12,6 +12,7 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 VISION_ASSISTANT_ID = os.getenv('VISION_ASSISTANT_ID')
 CITY_ASSISTANT_ID = os.getenv('CITY_ASSISTANT_ID')
 ASSISTANT2_ID = os.getenv('ASSISTANT2_ID')
+YAPP_SESH_ASSISTANT_ID = os.getenv('YAPP_SESH_ASSISTANT_ID')
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 aclient = AsyncOpenAI(api_key=OPENAI_API_KEY)
 openai.api_key = OPENAI_API_KEY
@@ -77,9 +78,16 @@ async def check_if_thread_exists(usr_id):
     with shelve.open("threads_db") as threads_shelf:
         return threads_shelf.get(usr_id, None)
 
+async def check_if_yapp_thread_exists(usr_id):
+    with shelve.open("yapp_db") as threads_shelf:
+        return threads_shelf.get(usr_id, None)
 
 async def store_thread(usr_id, thread_id):
     with shelve.open("threads_db", writeback=True) as threads_shelf:
+        threads_shelf[usr_id] = thread_id
+
+async def store_yapp_thread(usr_id, thread_id):
+    with shelve.open("yapp_db", writeback=True) as threads_shelf:
         threads_shelf[usr_id] = thread_id
 
 
@@ -322,3 +330,34 @@ async def create_str(data):
         goalstr = "Сохранить вес и здоровье"
     requeststring = f"Я {gender} мне {age} лет, мой рост {height} см, мой вес {weight} кг. Мой bmr = {bmr}, мой tdee = {tdee}, мой bmi = {bmi}, моя цель {goalstr} {weight_change}, я оцениваю свою уровень стресса как: {stress}. Дополнительная важная информация: Статус беременности: {pregnancy}, статус кормления грудью: {breastfeeding}, Мои аллергии: {bans}, Я ем {meal_amount} раз в день, доп информация о приемах еды при наличии: {extra}, Я пью {booze} бокалов алкоголя в неделю, и {water} стаканов воды в день. Сплю в среднем {sleep} часов. Моя физическая нагрузка: {gym} часов силовых упражнений и {cardio} часов кардио"
     return requeststring
+
+async def assistant_with_extra_info(user_info, message_body, usr_id, assistant):
+    thread_id = await check_if_yapp_thread_exists(usr_id)
+    print(message_body, thread_id)
+
+    if thread_id is None:
+        print(f"Creating new thread for {usr_id}")
+        thread = await aclient.beta.threads.create(
+        messages=[
+
+            {
+                "role": "user",
+                "content": user_info
+            },
+        ]
+    )
+        await store_yapp_thread(usr_id, thread.id)
+        thread_id = thread.id
+    else:
+        print(f"Retrieving existing thread {usr_id}")
+        thread = await aclient.beta.threads.retrieve(thread_id)
+
+    message = await aclient.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=message_body,
+    )
+    print(message)
+
+    new_message = await run_assistant(thread, assistant)
+    return new_message
