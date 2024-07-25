@@ -1,5 +1,5 @@
 from quart import Quart, request, jsonify, render_template
-from functions import run_city, use_vision64, use_vision64_from_url, encode_image, send_image_to_gpt4_vision, send_sticker, send_mssg, check_if_thread_exists, store_thread, remove_thread, send_animation_url, delete_message, transcribe_audio, transcribe_audio_from_url, run_assistant, handle_assistant_response, process_url, generate_response
+from functions import run_city, create_str, use_vision64, use_vision64_from_url, encode_image, send_image_to_gpt4_vision, send_sticker, send_mssg, check_if_thread_exists, store_thread, remove_thread, send_animation_url, delete_message, transcribe_audio, transcribe_audio_from_url, run_assistant, handle_assistant_response, process_url, generate_response
 # from bot2 import OPENAI_API_KEY, handle_assistant_response, encode_image, use_vision64
 import openai
 from openai import AsyncOpenAI
@@ -241,12 +241,11 @@ async def edit_txt():
 async def yapp_with_input():
     print('day1_yapp triggered')
     data = await request.get_json()
-    print(str(data))
-    # user_info = data.get_json('user_info')
-    # id = data.get('id')
-    # question = data.get('question')
-    # print(f"{user_info}, id: {id}, question {question}")
-    return data, 201
+    print(data)
+    txt = data.get('txt')
+    user_info_str = await create_str(data)
+    info_to_send_to_gpt = f"Вопрос: {txt}, инфа: {user_info_str}"
+    return info_to_send_to_gpt, 201
 
 if __name__ == "__main__":
     # app.run(port=8080, debug=True)
