@@ -20,6 +20,7 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 VISION_ASSISTANT_ID = os.getenv('VISION_ASSISTANT_ID')
 CITY_ASSISTANT_ID = os.getenv('CITY_ASSISTANT_ID')
 ASSISTANT2_ID = os.getenv('ASSISTANT2_ID')
+YAPP_SESH_ASSISTANT_ID = os.getenv('YAPP_SESH_ASSISTANT_ID')
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 aclient = AsyncOpenAI(api_key=OPENAI_API_KEY)
 openai.api_key = OPENAI_API_KEY
@@ -243,9 +244,11 @@ async def yapp_with_input():
     data = await request.get_json()
     print(data)
     txt = data.get('txt')
+    id = data.get('id')
     user_info_str = await create_str(data)
     info_to_send_to_gpt = f"Вопрос: {txt}, инфа: {user_info_str}" #republish
-    return info_to_send_to_gpt, 201
+    response = assistant_with_extra_info(user_info_str, txt, id, YAPP_SESH_ASSISTANT_ID)
+    return response, 201
 
 if __name__ == "__main__":
     # app.run(port=8080, debug=True)
