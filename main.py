@@ -250,6 +250,11 @@ async def yapp_with_input():
     response = await assistant_with_extra_info(user_info_str, txt, id, YAPP_SESH_ASSISTANT_ID)
     return response, 201
 
+@app.route("/test", methods=["POST"])
+async def test():
+    print(request)
+    return request, 201
+
 if __name__ == "__main__":
     # app.run(port=8080, debug=True)
     app.run(host="0.0.0.0", port=PORT, debug=True)
