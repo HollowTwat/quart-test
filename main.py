@@ -254,7 +254,7 @@ async def yapp_with_input():
 async def test():
     data = request.get_json()
     print(data)
-    return str(data), 201
+    return "ok", 201
 
 if __name__ == "__main__":
     # app.run(port=8080, debug=True)
