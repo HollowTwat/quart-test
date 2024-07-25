@@ -301,6 +301,7 @@ async def create_str(data):
     tdee = data.get('tdee')
     bmi = data.get('user_info_bmi')
     goal = data.get('user_info_goal')
+    print(goal)
     weight_change = data.get('user_info_weight_change')
     pregnancy = data.get('user_info_pregnancy')
     breastfeeding = data.get('user_info_breastfeeding')
