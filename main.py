@@ -36,6 +36,9 @@ app.config["SESSION_REVERSE_PROXY"] = True
 Compress(app)
 
 
+@app.listen(PORT, '::', ()
+    print(f"Server listening on [::]{PORT}")
+
 @app.errorhandler(404)
 async def handle_not_found(e):
     return '<h1>😦</h1><b>404</b> Not found.<p><a href="/">return</a>'
@@ -258,4 +261,4 @@ async def test():
 
 if __name__ == "__main__":
     # app.run(port=8080, debug=True)
-    app.run(host="0.0.0.0", port=PORT, debug=True)
+    app.run(host='::', port=PORT, debug=True)
