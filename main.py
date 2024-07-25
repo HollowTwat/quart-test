@@ -195,6 +195,7 @@ async def process_imgg():
 async def image_proc():
     print('imGGG triggered')
     data = await request.get_json()
+    print(request, request.get())
     print(data)
     url = data.get('url')
     id = data.get('id')
