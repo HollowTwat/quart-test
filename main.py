@@ -244,7 +244,7 @@ async def yapp_with_input():
     print(data)
     txt = data.get('txt')
     user_info_str = await create_str(data)
-    info_to_send_to_gpt = f"Вопрос: {txt}, инфа: {user_info_str}"
+    info_to_send_to_gpt = f"Вопрос: {txt}, инфа: {user_info_str}" #republish
     return info_to_send_to_gpt, 201
 
 if __name__ == "__main__":
