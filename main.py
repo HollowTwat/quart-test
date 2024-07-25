@@ -247,7 +247,7 @@ async def yapp_with_input():
     id = data.get('id')
     user_info_str = await create_str(data)
     info_to_send_to_gpt = f"Вопрос: {txt}, инфа: {user_info_str}" #republish
-    response = assistant_with_extra_info(user_info_str, txt, id, YAPP_SESH_ASSISTANT_ID)
+    response = await assistant_with_extra_info(user_info_str, txt, id, YAPP_SESH_ASSISTANT_ID)
     return response, 201
 
 if __name__ == "__main__":
