@@ -266,7 +266,11 @@ async def yapp():
     id = data.get('id')
     question = data.get('txt')
     response = await yapp_assistant(question, id, YAPP_SESH_ASSISTANT_ID)
-    return response, 201
+    Jsoned = jsonify(
+    {
+         "extra" : str(response)
+    }) 
+    return Jsoned, 201
 
 @app.route("/day1/yapp_oga", methods=["POST"])
 async def yapp_oga():
