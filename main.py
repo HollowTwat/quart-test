@@ -276,7 +276,11 @@ async def yapp_oga():
     question = data.get('txt')
     transcription = await transcribe_audio_from_url(question)
     response = await yapp_assistant(transcription, id, YAPP_SESH_ASSISTANT_ID)
-    return response, 201
+    Jsoned = jsonify(
+    {
+         "extra" : str(response)
+    }) 
+    return Jsoned, 201
 
 
 @app.route("/test", methods=["POST"])
