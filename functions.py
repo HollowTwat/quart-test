@@ -30,7 +30,7 @@ async def generate_response(message_body, usr_id, assistant):
     else:
         print(f"Retrieving existing thread {usr_id}")
         thread = await aclient.beta.threads.retrieve(thread_id)
-        
+
     print(thread_id)
     message = await aclient.beta.threads.messages.create(
         thread_id=thread_id,
@@ -42,19 +42,20 @@ async def generate_response(message_body, usr_id, assistant):
     new_message = await run_assistant(thread, assistant)
     return new_message
 
+
 async def process_url(url, usr_id, assistant):
     thread_id = await check_if_thread_exists(usr_id)
 
     if thread_id is None:
         print(f"Creating new thread for {usr_id}")
-        thread = await  aclient.beta.threads.create()
+        thread = await aclient.beta.threads.create()
         await store_thread(usr_id, thread.id)
         thread_id = thread.id
     else:
         print(f"Retrieving existing thread {usr_id}")
-        thread = await  aclient.beta.threads.retrieve(thread_id)
+        thread = await aclient.beta.threads.retrieve(thread_id)
     print(url)
-    thread = await  aclient.beta.threads.create(
+    thread = await aclient.beta.threads.create(
         messages=[
 
             {
@@ -78,13 +79,16 @@ async def check_if_thread_exists(usr_id):
     with shelve.open("threads_db") as threads_shelf:
         return threads_shelf.get(usr_id, None)
 
+
 async def check_if_yapp_thread_exists(usr_id):
     with shelve.open("yapp_db") as threads_shelf:
         return threads_shelf.get(usr_id, None)
 
+
 async def store_thread(usr_id, thread_id):
     with shelve.open("threads_db", writeback=True) as threads_shelf:
         threads_shelf[usr_id] = thread_id
+
 
 async def store_yapp_thread(usr_id, thread_id):
     with shelve.open("yapp_db", writeback=True) as threads_shelf:
@@ -123,6 +127,7 @@ async def send_sticker(token, chat_id, sticker_id):
         async with session.post(url, data=data) as response:
             return await response.json()
 
+
 async def send_mssg(token, chat_id, text):
     url = f"https://api.telegram.org/bot{token}/sendMessage"
     data = {
@@ -133,7 +138,6 @@ async def send_mssg(token, chat_id, text):
     async with aiohttp.ClientSession() as session:
         async with session.post(url, data=data) as response:
             return await response.json()
-
 
 
 async def delete_message(token, chat_id, message_id):
@@ -151,8 +155,8 @@ async def delete_message(token, chat_id, message_id):
 
 async def run_assistant(thread, assistant):
     print("run_assistant hit")
-    assistant = await  aclient.beta.assistants.retrieve(assistant)
-    run = await  aclient.beta.threads.runs.create(
+    assistant = await aclient.beta.assistants.retrieve(assistant)
+    run = await aclient.beta.threads.runs.create(
         thread_id=thread.id,
         assistant_id=assistant.id,
     )
@@ -160,10 +164,10 @@ async def run_assistant(thread, assistant):
     while run.status != "completed":
         print(run.status)
         await asyncio.sleep(1.5)
-        run = await  aclient.beta.threads.runs.retrieve(
+        run = await aclient.beta.threads.runs.retrieve(
             thread_id=thread.id, run_id=run.id)
 
-    messages = await  aclient.beta.threads.messages.list(thread_id=thread.id)
+    messages = await aclient.beta.threads.messages.list(thread_id=thread.id)
     latest_mssg = messages.data[0].content[0].text.value
     print(f"generated: {latest_mssg}")
     return latest_mssg
@@ -265,10 +269,11 @@ async def transcribe_audio_from_url(url):
     else:
         raise Exception(f"Failed to fetch audio from URL: {response.status}")
 
+
 async def run_city(message_body, assistant):
     thread = await aclient.beta.threads.create()
     thread_id = thread.id
-    
+
     message = await aclient.beta.threads.messages.create(
         thread_id=thread_id,
         role="user",
@@ -277,20 +282,21 @@ async def run_city(message_body, assistant):
     new_message = await run_assistant(thread, assistant)
     return new_message
 
+
 async def generate_response(message_body, usr_id, assistant):
     thread_id = await check_if_thread_exists(usr_id)
     print(message_body, thread_id)
 
     if thread_id is None:
         print(f"Creating new thread for {usr_id}")
-        thread = await  aclient.beta.threads.create()
+        thread = await aclient.beta.threads.create()
         await store_thread(usr_id, thread.id)
         thread_id = thread.id
     else:
         print(f"Retrieving existing thread {usr_id}")
-        thread = await  aclient.beta.threads.retrieve(thread_id)
+        thread = await aclient.beta.threads.retrieve(thread_id)
 
-    message = await  aclient.beta.threads.messages.create(
+    message = await aclient.beta.threads.messages.create(
         thread_id=thread_id,
         role="user",
         content=message_body,
@@ -299,6 +305,7 @@ async def generate_response(message_body, usr_id, assistant):
 
     new_message = await run_assistant(thread, assistant)
     return new_message
+
 
 async def create_str(data):
     gender = data.get('user_info_gender')
@@ -331,23 +338,41 @@ async def create_str(data):
     requeststring = f"Я {gender} мне {age} лет, мой рост {height} см, мой вес {weight} кг. Мой bmr = {bmr}, мой tdee = {tdee}, мой bmi = {bmi}, моя цель {goalstr} {weight_change}, я оцениваю свою уровень стресса как: {stress}. Дополнительная важная информация: Статус беременности: {pregnancy}, статус кормления грудью: {breastfeeding}, Мои аллергии: {bans}, Я ем {meal_amount} раз в день, доп информация о приемах еды при наличии: {extra}, Я пью {booze} бокалов алкоголя в неделю, и {water} стаканов воды в день. Сплю в среднем {sleep} часов. Моя физическая нагрузка: {gym} часов силовых упражнений и {cardio} часов кардио"
     return requeststring
 
-async def assistant_with_extra_info(user_info, message_body, usr_id, assistant):
+
+async def create_thread_with_extra_info(user_info, usr_id, assistant):
     thread_id = await check_if_yapp_thread_exists(usr_id)
-    print(message_body, thread_id)
+    print( thread_id)
 
     if thread_id is None:
         print(f"Creating new thread for {usr_id}")
         thread = await aclient.beta.threads.create(
-        messages=[
+            messages=[
 
-            {
-                "role": "user",
-                "content": user_info
-            },
-        ]
-    )
+                {
+                    "role": "user",
+                    "content": user_info
+                },
+            ]
+        )
         await store_yapp_thread(usr_id, thread.id)
         thread_id = thread.id
+    else:
+        print(f"Thread already exists {usr_id}")
+        return "thread already exists"
+        thread = await aclient.beta.threads.retrieve(thread_id)
+        
+    # new_message = await run_assistant(thread, assistant)
+    # return new_message
+    return f"thread {thread_id} created"
+
+
+async def yapp_assistant(message_body, usr_id, assistant):
+    thread_id = await check_if_yapp_thread_exists(usr_id)
+    print(message_body, thread_id)
+
+    if thread_id is None:
+        print(f"No thread for {usr_id}")
+        return "no thread err"
     else:
         print(f"Retrieving existing thread {usr_id}")
         thread = await aclient.beta.threads.retrieve(thread_id)
@@ -361,3 +386,4 @@ async def assistant_with_extra_info(user_info, message_body, usr_id, assistant):
 
     new_message = await run_assistant(thread, assistant)
     return new_message
+    
