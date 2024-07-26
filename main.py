@@ -1,5 +1,5 @@
 from quart import Quart, request, jsonify, render_template
-from functions import run_city, create_str, assistant_with_extra_info, use_vision64, use_vision64_from_url, encode_image, send_image_to_gpt4_vision, send_sticker, send_mssg, check_if_thread_exists, store_thread, remove_thread, send_animation_url, delete_message, transcribe_audio, transcribe_audio_from_url, run_assistant, handle_assistant_response, process_url, generate_response
+from functions import run_city, create_str, create_thread_with_extra_info, yapp_assistant, use_vision64, use_vision64_from_url, encode_image, send_image_to_gpt4_vision, send_sticker, send_mssg, check_if_thread_exists, store_thread, remove_thread, send_animation_url, delete_message, transcribe_audio, transcribe_audio_from_url, run_assistant, handle_assistant_response, process_url, generate_response
 # from bot2 import OPENAI_API_KEY, handle_assistant_response, encode_image, use_vision64
 import openai
 from openai import AsyncOpenAI
@@ -13,8 +13,8 @@ from quart_compress import Compress
 import random
 from sale_stickers import STICKERLIST
 
-sticker_id = "CAACAgIAAxkBAAIHp2aLyyiL4UY-FICRxHkMxTBvi9jkAAIXUAAC8R5hSFFY0DLWfFtzNQQ" 
-#"CAACAgIAAxkBAAIE62aF2oFJ5Ltu03_xMZWrC40hoAABzAACGUEAAqIlcUhMnKnBWnZogDUE" CAACAgIAAxkBAAIINGaMcaRe9fVOeaZTFZyWWWM6CrnHAAIBTQACA09oSDqGGMuDHw4tNQQ
+sticker_id = "CAACAgIAAxkBAAIHp2aLyyiL4UY-FICRxHkMxTBvi9jkAAIXUAAC8R5hSFFY0DLWfFtzNQQ"
+# "CAACAgIAAxkBAAIE62aF2oFJ5Ltu03_xMZWrC40hoAABzAACGUEAAqIlcUhMnKnBWnZogDUE" CAACAgIAAxkBAAIINGaMcaRe9fVOeaZTFZyWWWM6CrnHAAIBTQACA09oSDqGGMuDHw4tNQQ
 
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 VISION_ASSISTANT_ID = os.getenv('VISION_ASSISTANT_ID')
@@ -111,6 +111,7 @@ async def thread_remove():
     await remove_thread(id)
     return "removed", 201
 
+
 @app.route("/city", methods=["POST"])
 async def city_quip():
     data = await request.get_json()
@@ -136,8 +137,8 @@ async def transcribe():
     # assistant_response = await handle_assistant_response(transcription)
     # assistant_response = await text_input(transcription)
     assistant_response = await generate_response(transcription, id, VISION_ASSISTANT_ID)
-    
-    await delete_message(TELETOKEN, id, mssg_id) 
+
+    await delete_message(TELETOKEN, id, mssg_id)
     # response = {
     #     "transcription": transcription,
     #     "assistant_response": str(assistant_response)
@@ -155,7 +156,7 @@ async def process_txt():
     result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     message = result.get("result")
     mssg_id = message.get("message_id")
-    
+
     assistant_response = await generate_response(txt, id, VISION_ASSISTANT_ID)
     # vision1 = jsonify(vision).content
     await delete_message(TELETOKEN, id, mssg_id)
@@ -209,6 +210,7 @@ async def image_proc():
     await delete_message(TELETOKEN, id, mssg_id)
     return vision, 201
 
+
 @app.route("/edit_oga", methods=["POST"])
 async def edit_audio():
     print('edit_oga triggered')
@@ -223,9 +225,10 @@ async def edit_audio():
     message = result.get("result")
     mssg_id = message.get("message_id")
     assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {transcription}", id, VISION_ASSISTANT_ID)
-    
-    await delete_message(TELETOKEN, id, mssg_id) 
+
+    await delete_message(TELETOKEN, id, mssg_id)
     return assistant_response, 201
+
 
 @app.route("/edit_txt", methods=["POST"])
 async def edit_txt():
@@ -238,22 +241,43 @@ async def edit_txt():
     result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     message = result.get("result")
     mssg_id = message.get("message_id")
-    
+
     assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {txt}", id, VISION_ASSISTANT_ID)
     await delete_message(TELETOKEN, id, mssg_id)
     return assistant_response, 201
 
+
+@app.route("/day1/yapp_create", methods=["POST"])
+async def yapp_thread_input():
+    print('day1_yapp_create triggered')
+    data = await request.get_json()
+    print(data)
+    id = data.get('id')
+    user_info_str = await create_str(data)
+    info_to_send_to_gpt = f"Инфа: {user_info_str}"  # republish
+    response = await create_thread_with_extra_info(user_info_str, id, YAPP_SESH_ASSISTANT_ID)
+    return response, 201
+
 @app.route("/day1/yapp", methods=["POST"])
-async def yapp_with_input():
+async def yapp():
     print('day1_yapp triggered')
     data = await request.get_json()
     print(data)
-    txt = data.get('txt')
     id = data.get('id')
-    user_info_str = await create_str(data)
-    info_to_send_to_gpt = f"Вопрос: {txt}, инфа: {user_info_str}" #republish
-    response = await assistant_with_extra_info(user_info_str, txt, id, YAPP_SESH_ASSISTANT_ID)
+    question = data.get('question')
+    response = await yapp_assistant(question, id, YAPP_SESH_ASSISTANT_ID)
     return response, 201
+
+@app.route("/day1/yapp_oga", methods=["POST"])
+async def yapp_oga():
+    print('day1_oga_yapp')
+    data = await request.get_json()
+    id = data.get('id')
+    question = data.get('question')
+    transcription = await transcribe_audio_from_url(question)
+    response = await yapp_assistant(transcription, id, YAPP_SESH_ASSISTANT_ID)
+    return response, 201
+
 
 @app.route("/test", methods=["POST"])
 async def test():
