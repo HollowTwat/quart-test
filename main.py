@@ -264,7 +264,7 @@ async def yapp():
     data = await request.get_json()
     print(data)
     id = data.get('id')
-    question = data.get('question')
+    question = data.get('txt')
     response = await yapp_assistant(question, id, YAPP_SESH_ASSISTANT_ID)
     return response, 201
 
@@ -273,7 +273,7 @@ async def yapp_oga():
     print('day1_oga_yapp')
     data = await request.get_json()
     id = data.get('id')
-    question = data.get('question')
+    question = data.get('txt')
     transcription = await transcribe_audio_from_url(question)
     response = await yapp_assistant(transcription, id, YAPP_SESH_ASSISTANT_ID)
     return response, 201
