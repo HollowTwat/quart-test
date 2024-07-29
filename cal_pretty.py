@@ -27,6 +27,6 @@ async def prettify_and_count(data):
     json_data["pretty"] = pretty_output
 
     # Print or save the resulting JSON
-    resulting_json = json.dumps(data, ensure_ascii=False, indent=2)
+    resulting_json = json.dumps(json_data, ensure_ascii=False, indent=2)
     print(resulting_json)
     return resulting_json
