@@ -2,10 +2,10 @@ import json
 
 
 async def prettify_and_count(data):
-    json.loads(data)
+    json_data = json.loads(data)
     pretty_list = []
 
-    for item in data["food"]:
+    for item in json_data["food"]:
         nutritional_value = item["nutritional_value"]
         fats = nutritional_value["fats"]
         carbs = nutritional_value["carbs"]
@@ -24,7 +24,7 @@ async def prettify_and_count(data):
                                item in enumerate(pretty_list)])
 
     # Add pretty string to data
-    data["pretty"] = pretty_output
+    json_data["pretty"] = pretty_output
 
     # Print or save the resulting JSON
     resulting_json = json.dumps(data, ensure_ascii=False, indent=2)
