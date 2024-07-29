@@ -391,7 +391,7 @@ async def no_thread_ass(message_body, assistant):
 
     thread = await aclient.beta.threads.create()
     message = await aclient.beta.threads.messages.create(
-        thread_id=thread_id,
+        thread_id=thread.id,
         role="user",
         content=message_body,
     )
