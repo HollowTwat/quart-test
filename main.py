@@ -266,7 +266,7 @@ async def rate_day():
     print('rate_day')
     data = await request.get_json()
     id = data.get('id')
-    assistant_response = await generate_response(data, id, RATE_DAY_ASS_ID)
+    assistant_response = await generate_response(str(data), id, RATE_DAY_ASS_ID)
     Jsoned = jsonify(
     {
          "extra" : str(assistant_response)
