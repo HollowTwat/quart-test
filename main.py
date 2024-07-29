@@ -264,7 +264,9 @@ async def yapp_oga():
 @app.route("/rate_day", methods=["POST"])
 async def rate_day():
     print('rate_day')
+    print(request)
     data = await request.get_json()
+    print(data)
     id = data.get('id')
     assistant_response = await no_thread_ass(str(data), RATE_DAY_ASS_ID)
     Jsoned = jsonify(
