@@ -268,7 +268,8 @@ async def rate_day():
     data = await request.get_json()
     print(data)
     id = data.get('id')
-    assistant_response = await no_thread_ass(str(data), RATE_DAY_ASS_ID)
+    question = data.get('txt')
+    assistant_response = await no_thread_ass(question, RATE_DAY_ASS_ID)
     Jsoned = jsonify(
     {
          "extra" : str(assistant_response)
