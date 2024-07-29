@@ -387,16 +387,16 @@ async def yapp_assistant(message_body, usr_id, assistant):
     new_message = await run_assistant(thread, assistant)
     return new_message
 
-    async def no_thread_ass(message_body, assistant):
+async def no_thread_ass(message_body, assistant):
 
-        thread = await aclient.beta.threads.create()
-        message = await aclient.beta.threads.messages.create(
-            thread_id=thread_id,
-            role="user",
-            content=message_body,
-        )
-        print(message)
+    thread = await aclient.beta.threads.create()
+    message = await aclient.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=message_body,
+    )
+    print(message)
     
-        new_message = await run_assistant(thread, assistant)
-        return new_message
+    new_message = await run_assistant(thread, assistant)
+    return new_message
         
