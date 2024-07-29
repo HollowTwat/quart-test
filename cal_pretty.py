@@ -2,6 +2,7 @@ import json
 
 
 async def prettify_and_count(data):
+    json.loads(data)
     pretty_list = []
 
     for item in data["food"]:
