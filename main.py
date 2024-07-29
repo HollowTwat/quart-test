@@ -22,6 +22,7 @@ VISION_ASSISTANT_ID = os.getenv('VISION_ASSISTANT_ID')
 CITY_ASSISTANT_ID = os.getenv('CITY_ASSISTANT_ID')
 ASSISTANT2_ID = os.getenv('ASSISTANT2_ID')
 YAPP_SESH_ASSISTANT_ID = os.getenv('YAPP_SESH_ASSISTANT_ID')
+RATE_DAY_ASS_ID = os.getenv('RATE_DAY_ASS_ID')
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 aclient = AsyncOpenAI(api_key=OPENAI_API_KEY)
 openai.api_key = OPENAI_API_KEY
@@ -260,6 +261,17 @@ async def yapp_oga():
     }) 
     return Jsoned, 201
 
+@app.route("/rate_day", methods=["POST"])
+async def yapp_oga():
+    print('rate_day')
+    data = await request.get_json()
+    id = data.get('id')
+    assistant_response = await generate_response(data, id, RATE_DAY_ASS_ID)
+    Jsoned = jsonify(
+    {
+         "extra" : str(assistant_response)
+    }) 
+    return Jsoned, 201
 
 @app.route("/test", methods=["POST"])
 async def test():
