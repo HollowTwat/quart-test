@@ -138,14 +138,14 @@ async def transcribe():
     # assistant_response = await handle_assistant_response(transcription)
     # assistant_response = await text_input(transcription)
     assistant_response = await generate_response(transcription, id, VISION_ASSISTANT_ID)
-
+    counted = await prettify_and_count(assistant_response)
     await delete_message(TELETOKEN, id, mssg_id)
     # response = {
     #     "transcription": transcription,
     #     "assistant_response": str(assistant_response)
     # }
 
-    return assistant_response, 201
+    return counted, 201
 
 
 @app.route("/txt", methods=["POST"])
@@ -165,35 +165,6 @@ async def process_txt():
     return counted, 201
 
 
-@app.route("/img", methods=["POST"])
-async def process_image():
-    print('img triggered')
-    data = await request.get_json()
-
-    url = data.get('url')
-    vision = await use_vision64_from_url(url)
-    # vision1 = jsonify(vision).content
-
-    return jsonify(vision), 201
-
-
-@app.route("/imgg", methods=["POST"])
-async def process_imgg():
-    print('imGG triggered')
-    data = await request.get_json()
-    url = data.get('url')
-    id = data.get('id')
-    print(data, url, id, TELETOKEN)
-    # result = await send_animation_url(TELETOKEN, id, file_url)
-    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
-    message = result.get("result")
-    mssg_id = message.get("message_id")
-    vision = await handle_img_link(url)
-    print(vision)
-    await delete_message(TELETOKEN, id, mssg_id)
-    return vision, 201
-
-
 @app.route("/imggg", methods=["POST"])
 async def image_proc():
     print('imGGG triggered')
@@ -208,9 +179,9 @@ async def image_proc():
     mssg_id = message.get("message_id")
 
     vision = await process_url(url, id, VISION_ASSISTANT_ID)
-
+    counted = await prettify_and_count(vision)
     await delete_message(TELETOKEN, id, mssg_id)
-    return vision, 201
+    return counted, 201
 
 
 @app.route("/edit_oga", methods=["POST"])
@@ -227,9 +198,9 @@ async def edit_audio():
     message = result.get("result")
     mssg_id = message.get("message_id")
     assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {transcription}", id, VISION_ASSISTANT_ID)
-
+    counted = await prettify_and_count(assistant_response)
     await delete_message(TELETOKEN, id, mssg_id)
-    return assistant_response, 201
+    return counted, 201
 
 
 @app.route("/edit_txt", methods=["POST"])
@@ -245,8 +216,9 @@ async def edit_txt():
     mssg_id = message.get("message_id")
 
     assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {txt}", id, VISION_ASSISTANT_ID)
+    counted = await prettify_and_count(assistant_response)
     await delete_message(TELETOKEN, id, mssg_id)
-    return assistant_response, 201
+    return counted, 201
 
 
 @app.route("/day1/yapp_create", methods=["POST"])
