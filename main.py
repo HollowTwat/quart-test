@@ -262,7 +262,7 @@ async def yapp_oga():
     return Jsoned, 201
 
 @app.route("/rate_day", methods=["POST"])
-async def yapp_oga():
+async def rate_day():
     print('rate_day')
     data = await request.get_json()
     id = data.get('id')
