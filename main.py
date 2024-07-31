@@ -240,11 +240,17 @@ async def yapp():
     print(data)
     id = data.get('id')
     question = data.get('txt')
+    
+    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+    message = result.get("result")
+    mssg_id = message.get("message_id")
+    
     response = await yapp_assistant(question, id, YAPP_SESH_ASSISTANT_ID)
     Jsoned = jsonify(
     {
          "extra" : str(response)
     }) 
+    await delete_message(TELETOKEN, id, mssg_id)
     return Jsoned, 201
 
 @app.route("/day1/yapp_oga", methods=["POST"])
@@ -254,11 +260,17 @@ async def yapp_oga():
     id = data.get('id')
     question = data.get('txt')
     transcription = await transcribe_audio_from_url(question)
+    
+    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+    message = result.get("result")
+    mssg_id = message.get("message_id")
+    
     response = await yapp_assistant(transcription, id, YAPP_SESH_ASSISTANT_ID)
     Jsoned = jsonify(
     {
          "extra" : str(response)
     }) 
+    await delete_message(TELETOKEN, id, mssg_id)
     return Jsoned, 201
 
 @app.route("/rate_day", methods=["POST"])
@@ -269,11 +281,17 @@ async def rate_day():
     print(data)
     id = data.get('id')
     question = data.get('txt')
+    
+    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+    message = result.get("result")
+    mssg_id = message.get("message_id")
+    
     assistant_response = await no_thread_ass(question, RATE_DAY_ASS_ID)
     Jsoned = jsonify(
     {
          "extra" : str(assistant_response)
     }) 
+    await delete_message(TELETOKEN, id, mssg_id)
     return Jsoned, 201
 
 @app.route("/test", methods=["POST"])
