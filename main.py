@@ -148,10 +148,11 @@ async def transcribe():
     print(result)
     message = result.get("result")
     mssg_id = message.get("message_id")
-    # assistant_response = await handle_assistant_response(transcription)
-    # assistant_response = await text_input(transcription)
+    outputtype = data.get('outputtype')
+
+    
     assistant_response = await generate_response(transcription, id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(assistant_response, detailed_format=True)
+    counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0") )
     await delete_message(TELETOKEN, id, mssg_id)
     # response = {
     #     "transcription": transcription,
@@ -182,6 +183,7 @@ async def process_txt():
 @app.route("/imggg", methods=["POST"])
 async def image_proc():
     print('imGGG triggered')
+    
     data = await request.get_json()
     print(request)
     print(data)
@@ -191,9 +193,10 @@ async def image_proc():
     result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     message = result.get("result")
     mssg_id = message.get("message_id")
+    outputtype = data.get('outputtype')
 
     vision = await process_url(url, id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(vision, detailed_format=True)
+    counted = await prettify_and_count(vision, detailed_format=(outputtype == "0") )
     await delete_message(TELETOKEN, id, mssg_id)
     return counted, 201
 
@@ -201,18 +204,20 @@ async def image_proc():
 @app.route("/edit_oga", methods=["POST"])
 async def edit_audio():
     print('edit_oga triggered')
+    
     data = await request.get_json()
-
     url = data.get('url')
     id = data.get('id')
     old = data.get('oldmeal')
+    outputtype = data.get('outputtype')
+    
     transcription = await transcribe_audio_from_url(url)
     await send_mssg(TELETOKEN, id, f"Транскрипция: {transcription}")
     result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     message = result.get("result")
     mssg_id = message.get("message_id")
     assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {transcription}", id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(assistant_response, detailed_format=True)
+    counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0") )
     await delete_message(TELETOKEN, id, mssg_id)
     return counted, 201
 
@@ -220,17 +225,20 @@ async def edit_audio():
 @app.route("/edit_txt", methods=["POST"])
 async def edit_txt():
     print('edit_txt triggered')
+    
     data = await request.get_json()
     txt = data.get('txt')
     id = data.get('id')
     old = data.get('oldmeal')
+    outputtype = data.get('outputtype')
+    
     print(txt, id, old)
     result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     message = result.get("result")
     mssg_id = message.get("message_id")
 
     assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {txt}", id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(assistant_response, detailed_format=True)
+    counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0") )
     await delete_message(TELETOKEN, id, mssg_id)
     return counted, 201
 
