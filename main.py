@@ -170,9 +170,10 @@ async def process_txt():
     result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     message = result.get("result")
     mssg_id = message.get("message_id")
+    outputtype = data.get('outputtype')
 
     assistant_response = await generate_response(txt, id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(assistant_response, detailed_format=True)
+    counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0") )
     # vision1 = jsonify(vision).content
     await delete_message(TELETOKEN, id, mssg_id)
     return counted, 201
