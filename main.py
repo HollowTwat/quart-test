@@ -310,35 +310,13 @@ async def rate_day():
     return Jsoned, 201
 
 
-@app.route("/rate_day", methods=["POST"])
-async def rate_day():
-    print('rate_day')
-    print(request)
-    data = await request.get_json()
-    print(data)
-    id = data.get('id')
-    question = data.get('txt')
-
-    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
-    message = result.get("result")
-    mssg_id = message.get("message_id")
-
-    assistant_response = await no_thread_ass(question, RATE_DAY_ASS_ID)
-    Jsoned = jsonify(
-        {
-            "extra": str(assistant_response)
-        })
-    await delete_message(TELETOKEN, id, mssg_id)
-    return Jsoned, 201
-
-
 @app.route("/rate_any", methods=["POST"])
 async def rate_any():
     print('rate_any')
     print(request)
     data = await request.get_json()
     print(data)
-    size = data.get('oldmeal')
+    size = data.get('assistantType')
     id = data.get('id')
     question = data.get('txt')
     ass = get_correct_ass(size)
