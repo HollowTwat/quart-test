@@ -316,7 +316,7 @@ async def rate_any():
     print(request)
     data = await request.get_json()
     print(data)
-    size = data.get('assistantType')
+    size = data.get('assistanttype')
     id = data.get('id')
     question = data.get('txt')
     ass = get_correct_ass(size)
