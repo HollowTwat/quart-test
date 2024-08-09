@@ -139,7 +139,7 @@ async def transcribe():
     # assistant_response = await handle_assistant_response(transcription)
     # assistant_response = await text_input(transcription)
     assistant_response = await generate_response(transcription, id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(assistant_response)
+    counted = await prettify_and_count(assistant_response, detailed_format=True)
     await delete_message(TELETOKEN, id, mssg_id)
     # response = {
     #     "transcription": transcription,
@@ -160,7 +160,7 @@ async def process_txt():
     mssg_id = message.get("message_id")
 
     assistant_response = await generate_response(txt, id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(assistant_response)
+    counted = await prettify_and_count(assistant_response, detailed_format=True)
     # vision1 = jsonify(vision).content
     await delete_message(TELETOKEN, id, mssg_id)
     return counted, 201
@@ -180,7 +180,7 @@ async def image_proc():
     mssg_id = message.get("message_id")
 
     vision = await process_url(url, id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(vision)
+    counted = await prettify_and_count(vision, detailed_format=True)
     await delete_message(TELETOKEN, id, mssg_id)
     return counted, 201
 
@@ -199,7 +199,7 @@ async def edit_audio():
     message = result.get("result")
     mssg_id = message.get("message_id")
     assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {transcription}", id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(assistant_response)
+    counted = await prettify_and_count(assistant_response, detailed_format=True)
     await delete_message(TELETOKEN, id, mssg_id)
     return counted, 201
 
@@ -217,7 +217,7 @@ async def edit_txt():
     mssg_id = message.get("message_id")
 
     assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {txt}", id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(assistant_response)
+    counted = await prettify_and_count(assistant_response, detailed_format=True)
     await delete_message(TELETOKEN, id, mssg_id)
     return counted, 201
 
