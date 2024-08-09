@@ -23,6 +23,8 @@ CITY_ASSISTANT_ID = os.getenv('CITY_ASSISTANT_ID')
 ASSISTANT2_ID = os.getenv('ASSISTANT2_ID')
 YAPP_SESH_ASSISTANT_ID = os.getenv('YAPP_SESH_ASSISTANT_ID')
 RATE_DAY_ASS_ID = os.getenv('RATE_DAY_ASS_ID')
+RATE_MID_ASS_ID = os.getenv('RATE_MID_ASS_ID')
+RATE_SMOL_ASS_ID = os.getenv('RATE_SMOL_ASS_ID')
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 aclient = AsyncOpenAI(api_key=OPENAI_API_KEY)
 openai.api_key = OPENAI_API_KEY
@@ -84,6 +86,16 @@ async def text_input(input):
     new_message = await run_assistant(thread, ASSISTANT2_ID)
     print(new_message)
     return new_message
+
+
+def get_correct_ass(size):
+    ass_mapping = {
+        'big': RATE_DAY_ASS_ID,
+        'mid': RATE_MID_ASS_ID,
+        'smol': RATE_SMOL_ASS_ID
+    }
+
+    return ass_mapping.get(size)
 
 
 @app.route("/")
@@ -233,6 +245,7 @@ async def yapp_thread_input():
     response = await create_thread_with_extra_info(user_info_str, id, YAPP_SESH_ASSISTANT_ID)
     return response, 201
 
+
 @app.route("/day1/yapp", methods=["POST"])
 async def yapp():
     print('day1_yapp triggered')
@@ -240,18 +253,19 @@ async def yapp():
     print(data)
     id = data.get('id')
     question = data.get('txt')
-    
+
     result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     message = result.get("result")
     mssg_id = message.get("message_id")
-    
+
     response = await yapp_assistant(question, id, YAPP_SESH_ASSISTANT_ID)
     Jsoned = jsonify(
-    {
-         "extra" : str(response)
-    }) 
+        {
+            "extra": str(response)
+        })
     await delete_message(TELETOKEN, id, mssg_id)
     return Jsoned, 201
+
 
 @app.route("/day1/yapp_oga", methods=["POST"])
 async def yapp_oga():
@@ -260,18 +274,19 @@ async def yapp_oga():
     id = data.get('id')
     question = data.get('txt')
     transcription = await transcribe_audio_from_url(question)
-    
+
     result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     message = result.get("result")
     mssg_id = message.get("message_id")
-    
+
     response = await yapp_assistant(transcription, id, YAPP_SESH_ASSISTANT_ID)
     Jsoned = jsonify(
-    {
-         "extra" : str(response)
-    }) 
+        {
+            "extra": str(response)
+        })
     await delete_message(TELETOKEN, id, mssg_id)
     return Jsoned, 201
+
 
 @app.route("/rate_day", methods=["POST"])
 async def rate_day():
@@ -281,18 +296,65 @@ async def rate_day():
     print(data)
     id = data.get('id')
     question = data.get('txt')
-    
+
     result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     message = result.get("result")
     mssg_id = message.get("message_id")
-    
+
     assistant_response = await no_thread_ass(question, RATE_DAY_ASS_ID)
     Jsoned = jsonify(
-    {
-         "extra" : str(assistant_response)
-    }) 
+        {
+            "extra": str(assistant_response)
+        })
     await delete_message(TELETOKEN, id, mssg_id)
     return Jsoned, 201
+
+
+@app.route("/rate_day", methods=["POST"])
+async def rate_day():
+    print('rate_day')
+    print(request)
+    data = await request.get_json()
+    print(data)
+    id = data.get('id')
+    question = data.get('txt')
+
+    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+    message = result.get("result")
+    mssg_id = message.get("message_id")
+
+    assistant_response = await no_thread_ass(question, RATE_DAY_ASS_ID)
+    Jsoned = jsonify(
+        {
+            "extra": str(assistant_response)
+        })
+    await delete_message(TELETOKEN, id, mssg_id)
+    return Jsoned, 201
+
+
+@app.route("/rate_any", methods=["POST"])
+async def rate_any():
+    print('rate_any')
+    print(request)
+    data = await request.get_json()
+    print(data)
+    size = data.get('oldmeal')
+    id = data.get('id')
+    question = data.get('txt')
+    ass = get_correct_ass(size)
+
+    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+    message = result.get("result")
+    mssg_id = message.get("message_id")
+
+    assistant_response = await no_thread_ass(question, ass)
+    Jsoned = jsonify(
+        {
+            "extra": str(assistant_response)
+        })
+    await delete_message(TELETOKEN, id, mssg_id)
+    return Jsoned, 201
+
 
 @app.route("/test", methods=["POST"])
 async def test():
