@@ -154,23 +154,33 @@ async def delete_message(token, chat_id, message_id):
 
 
 async def run_assistant(thread, assistant):
-    print("run_assistant hit")
-    assistant = await aclient.beta.assistants.retrieve(assistant)
-    run = await aclient.beta.threads.runs.create(
-        thread_id=thread.id,
-        assistant_id=assistant.id,
-    )
+    try:
+        print("run_assistant hit")
+        assistant = await aclient.beta.assistants.retrieve(assistant)
+        run = await aclient.beta.threads.runs.create(
+            thread_id=thread.id,
+            assistant_id=assistant.id,
+        )
+    
+        while run.status != "completed":
+            if run.status == "failed":
+                messages = await client.beta.threads.messages.list(thread_id=thread.id)
+                raise Exception(
+                    f"Run failed with status: {run.status} and generated {messages.data[0]}")
 
-    while run.status != "completed":
-        print(run.status)
-        await asyncio.sleep(1.5)
-        run = await aclient.beta.threads.runs.retrieve(
-            thread_id=thread.id, run_id=run.id)
+            print(run.status)
+            await asyncio.sleep(1.5)
+            run = await aclient.beta.threads.runs.retrieve(
+                thread_id=thread.id, run_id=run.id)
+    
+        messages = await aclient.beta.threads.messages.list(thread_id=thread.id)
+        latest_mssg = messages.data[0].content[0].text.value
+        print(f"generated: {latest_mssg}")
+        return latest_mssg
 
-    messages = await aclient.beta.threads.messages.list(thread_id=thread.id)
-    latest_mssg = messages.data[0].content[0].text.value
-    print(f"generated: {latest_mssg}")
-    return latest_mssg
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return f"exception: {e}"
 
 
 async def handle_assistant_response(prompt):
