@@ -25,7 +25,7 @@ async def prettify_and_count(data, detailed_format=True):
         else:
             pretty_str = (
                 f"{item['description']} {item['weight']} г:</b>\n"
-                f" {kcal} ккал ({fats}г жиров / {carbs}г углеводов / {protein}г белков);/n"
+                f" {kcal} ккал ({fats}г жиров / {carbs}г углеводов / {protein}г белков);\n"
             )
         pretty_list.append(pretty_str)
     
