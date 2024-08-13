@@ -24,7 +24,7 @@ async def prettify_and_count(data, detailed_format=True):
             pretty_str = f"{item['description']} {item['weight']}г - {kcal} ккал ({fats}г жиров {carbs}г углеводов {protein}г белков)"
         else:
             pretty_str = (
-                f"<b>{item['description']} {item['weight']} г:</b>\n"
+                f"{item['description']} {item['weight']} г:</b>\n"
                 f" {kcal} ккал ({fats}г жиров / {carbs}г углеводов / {protein}г белков);"
             )
         pretty_list.append(pretty_str)
@@ -32,7 +32,7 @@ async def prettify_and_count(data, detailed_format=True):
     if detailed_format:
         pretty_output = "\n".join([f"{i+1}) {item}" for i, item in enumerate(pretty_list)])
     else:
-        pretty_output = "<b>Прием пищи:</b>\n\n" + "\n".join([f"<b>{i+1}. {item}" for i, item in enumerate(pretty_list)])
+        pretty_output = "<b>Прием пищи:</b>\n\n" + "\n".join([f"{i+1}. {item}" for i, item in enumerate(pretty_list)])
 
     json_data["pretty"] = pretty_output
 
