@@ -32,7 +32,7 @@ async def prettify_and_count(data, detailed_format=True):
     if detailed_format:
         pretty_output = "\n".join([f"{i+1}) {item}" for i, item in enumerate(pretty_list)])
     else:
-        pretty_output = "<b>Прием пищи:</b>\n\n" + "\n".join([f"{i+1}. {item}" for i, item in enumerate(pretty_list)])
+        pretty_output = "<b>Прием пищи:</b>\n\n" + "\n".join([f"{i+1}.<b> {item}" for i, item in enumerate(pretty_list)])
 
     json_data["pretty"] = pretty_output
 
