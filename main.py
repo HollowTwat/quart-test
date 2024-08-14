@@ -25,6 +25,7 @@ YAPP_SESH_ASSISTANT_ID = os.getenv('YAPP_SESH_ASSISTANT_ID')
 RATE_DAY_ASS_ID = os.getenv('RATE_DAY_ASS_ID')
 RATE_MID_ASS_ID = os.getenv('RATE_MID_ASS_ID')
 RATE_SMOL_ASS_ID = os.getenv('RATE_SMOL_ASS_ID')
+RATE_WEEK_ASS_ID = os.getenv('RATE_WEEK_ASS_ID')
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 aclient = AsyncOpenAI(api_key=OPENAI_API_KEY)
 openai.api_key = OPENAI_API_KEY
@@ -92,7 +93,8 @@ def get_correct_ass(size):
     ass_mapping = {
         'big': f"{RATE_DAY_ASS_ID}",
         'mid': f"{RATE_MID_ASS_ID}",
-        'smol': f"{RATE_SMOL_ASS_ID}"
+        'smol': f"{RATE_SMOL_ASS_ID}",
+        'week': f"{RATE_WEEK_ASS_ID}"
     }
 
     return ass_mapping.get(size)
@@ -150,9 +152,8 @@ async def transcribe():
     mssg_id = message.get("message_id")
     outputtype = data.get('outputtype')
 
-    
     assistant_response = await generate_response(transcription, id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0") )
+    counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
     await delete_message(TELETOKEN, id, mssg_id)
     # response = {
     #     "transcription": transcription,
@@ -174,7 +175,7 @@ async def process_txt():
     outputtype = data.get('outputtype')
 
     assistant_response = await generate_response(txt, id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0") )
+    counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
     # vision1 = jsonify(vision).content
     await delete_message(TELETOKEN, id, mssg_id)
     return counted, 201
@@ -183,7 +184,7 @@ async def process_txt():
 @app.route("/imggg", methods=["POST"])
 async def image_proc():
     print('imGGG triggered')
-    
+
     data = await request.get_json()
     print(request)
     print(data)
@@ -196,7 +197,7 @@ async def image_proc():
     outputtype = data.get('outputtype')
 
     vision = await process_url(url, id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(vision, detailed_format=(outputtype == "0") )
+    counted = await prettify_and_count(vision, detailed_format=(outputtype == "0"))
     await delete_message(TELETOKEN, id, mssg_id)
     return counted, 201
 
@@ -204,20 +205,20 @@ async def image_proc():
 @app.route("/edit_oga", methods=["POST"])
 async def edit_audio():
     print('edit_oga triggered')
-    
+
     data = await request.get_json()
     url = data.get('url')
     id = data.get('id')
     old = data.get('oldmeal')
     outputtype = data.get('outputtype')
-    
+
     transcription = await transcribe_audio_from_url(url)
     await send_mssg(TELETOKEN, id, f"Транскрипция: {transcription}")
     result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     message = result.get("result")
     mssg_id = message.get("message_id")
     assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {transcription}", id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0") )
+    counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
     await delete_message(TELETOKEN, id, mssg_id)
     return counted, 201
 
@@ -225,20 +226,20 @@ async def edit_audio():
 @app.route("/edit_txt", methods=["POST"])
 async def edit_txt():
     print('edit_txt triggered')
-    
+
     data = await request.get_json()
     txt = data.get('txt')
     id = data.get('id')
     old = data.get('oldmeal')
     outputtype = data.get('outputtype')
-    
+
     print(txt, id, old)
     result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     message = result.get("result")
     mssg_id = message.get("message_id")
 
     assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {txt}", id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0") )
+    counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
     await delete_message(TELETOKEN, id, mssg_id)
     return counted, 201
 
