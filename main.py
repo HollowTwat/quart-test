@@ -26,6 +26,7 @@ RATE_DAY_ASS_ID = os.getenv('RATE_DAY_ASS_ID')
 RATE_MID_ASS_ID = os.getenv('RATE_MID_ASS_ID')
 RATE_SMOL_ASS_ID = os.getenv('RATE_SMOL_ASS_ID')
 RATE_WEEK_ASS_ID = os.getenv('RATE_WEEK_ASS_ID')
+RATE_TWONE_ASS_ID = os.getenv('RATE_TWONE_ASS_ID')
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 aclient = AsyncOpenAI(api_key=OPENAI_API_KEY)
 openai.api_key = OPENAI_API_KEY
@@ -94,7 +95,8 @@ def get_correct_ass(size):
         'big': f"{RATE_DAY_ASS_ID}",
         'mid': f"{RATE_MID_ASS_ID}",
         'smol': f"{RATE_SMOL_ASS_ID}",
-        'week': f"{RATE_WEEK_ASS_ID}"
+        'week': f"{RATE_WEEK_ASS_ID}",
+        'twone': f"{RATE_TWONE_ASS_ID}"
     }
 
     return ass_mapping.get(size)
