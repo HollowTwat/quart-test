@@ -364,7 +364,7 @@ async def etik_proc():
 
     Jsoned = jsonify(
         {
-            "extra": str(assistant_response)
+            "extra": str(vision)
         })
     
     await delete_message(TELETOKEN, id, mssg_id)
