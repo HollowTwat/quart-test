@@ -1,6 +1,6 @@
 from quart import Quart, request, jsonify, render_template
 from cal_pretty import prettify_and_count
-from functions import no_thread_ass, run_city, create_str, create_thread_with_extra_info, yapp_assistant, use_vision64, use_vision64_from_url, encode_image, send_image_to_gpt4_vision, send_sticker, send_mssg, check_if_thread_exists, store_thread, remove_thread, send_animation_url, delete_message, transcribe_audio, transcribe_audio_from_url, run_assistant, handle_assistant_response, process_url, generate_response
+from functions import process_url_etik, no_thread_ass, run_city, create_str, create_thread_with_extra_info, yapp_assistant, use_vision64, use_vision64_from_url, encode_image, send_image_to_gpt4_vision, send_sticker, send_mssg, check_if_thread_exists, store_thread, remove_thread, send_animation_url, delete_message, transcribe_audio, transcribe_audio_from_url, run_assistant, handle_assistant_response, process_url, generate_response
 # from bot2 import OPENAI_API_KEY, handle_assistant_response, encode_image, use_vision64
 import openai
 from openai import AsyncOpenAI
@@ -27,6 +27,7 @@ RATE_MID_ASS_ID = os.getenv('RATE_MID_ASS_ID')
 RATE_SMOL_ASS_ID = os.getenv('RATE_SMOL_ASS_ID')
 RATE_WEEK_ASS_ID = os.getenv('RATE_WEEK_ASS_ID')
 RATE_TWONE_ASS_ID = os.getenv('RATE_TWONE_ASS_ID')
+ETIK_ASS_ID = os.getenv('ETIK_ASS_ID')
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 aclient = AsyncOpenAI(api_key=OPENAI_API_KEY)
 openai.api_key = OPENAI_API_KEY
@@ -344,6 +345,24 @@ async def rate_any():
         })
     await delete_message(TELETOKEN, id, mssg_id)
     return Jsoned, 201
+
+@app.route("/etik", methods=["POST"])
+async def image_proc():
+    print('etik triggered')
+
+    data = await request.get_json()
+    print(data)
+    url = data.get('url')
+    id = data.get('id')
+    print(data, url, id, TELETOKEN)
+    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+    message = result.get("result")
+    mssg_id = message.get("message_id")
+    outputtype = data.get('outputtype')
+
+    vision = await process_url_etik(url, id, ETIK_ASS_ID)
+    await delete_message(TELETOKEN, id, mssg_id)
+    return vision, 201
 
 
 @app.route("/test", methods=["POST"])
