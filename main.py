@@ -347,7 +347,7 @@ async def rate_any():
     return Jsoned, 201
 
 @app.route("/etik", methods=["POST"])
-async def image_proc():
+async def etik_proc():
     print('etik triggered')
 
     data = await request.get_json()
