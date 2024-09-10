@@ -75,6 +75,27 @@ async def process_url(url, usr_id, assistant):
     return new_message
 
 
+async def process_url_etik(url, usr_id, assistant):
+
+    thread = await aclient.beta.threads.create(
+        messages=[
+
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": url},
+                    },]
+            },
+        ]
+    )
+
+    new_message = await run_assistant(thread, assistant)
+
+    return new_message
+
+
 async def check_if_thread_exists(usr_id):
     with shelve.open("threads_db") as threads_shelf:
         return threads_shelf.get(usr_id, None)
