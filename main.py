@@ -359,10 +359,16 @@ async def etik_proc():
     message = result.get("result")
     mssg_id = message.get("message_id")
     outputtype = data.get('outputtype')
-
+    
     vision = await process_url_etik(url, id, ETIK_ASS_ID)
+
+    Jsoned = jsonify(
+        {
+            "extra": str(assistant_response)
+        })
+    
     await delete_message(TELETOKEN, id, mssg_id)
-    return vision, 201
+    return Jsoned, 201
 
 
 @app.route("/test", methods=["POST"])
