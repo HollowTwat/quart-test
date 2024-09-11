@@ -354,13 +354,14 @@ async def etik_proc():
     print(data)
     url = data.get('url')
     id = data.get('id')
+    allergies = data.get('extra')
     print(data, url, id, TELETOKEN)
     result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     message = result.get("result")
     mssg_id = message.get("message_id")
     outputtype = data.get('outputtype')
     
-    vision = await process_url_etik(url, id, ETIK_ASS_ID)
+    vision = await process_url_etik(url, allergies, id, ETIK_ASS_ID)
 
     Jsoned = jsonify(
         {
