@@ -13,11 +13,11 @@ async def prettify_and_count(data, detailed_format=True):
 
     for item in json_data["food"]:
         nutritional_value = item["nutritional_value"]
-        fats = round(nutritional_value["fats"], 1)
-        carbs = round(nutritional_value["carbs"], 1)
-        protein = round(nutritional_value["protein"], 1)
+        fats = round(nutritional_value["fats"])
+        carbs = round(nutritional_value["carbs"])
+        protein = round(nutritional_value["protein"])
 
-        kcal = round(fats * 9 + carbs * 4 + protein * 4, 1)
+        kcal = round(fats * 9 + carbs * 4 + protein * 4)
         nutritional_value["kcal"] = kcal
 
         if detailed_format:
