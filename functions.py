@@ -75,7 +75,7 @@ async def process_url(url, usr_id, assistant):
     return new_message
 
 
-async def process_url_etik(url, usr_id, assistant):
+async def process_url_etik(url, allergies, usr_id, assistant):
 
     thread = await aclient.beta.threads.create(
         messages=[
@@ -86,7 +86,11 @@ async def process_url_etik(url, usr_id, assistant):
                     {
                         "type": "image_url",
                         "image_url": {"url": url},
-                    },]
+                    },
+                {
+                    "type": "text",
+                    "text": f"У пользователя есть алергии на {allergies}"
+                },]
             },
         ]
     )
