@@ -212,7 +212,7 @@ async def edit_audio():
     data = await request.get_json()
     url = data.get('url')
     id = data.get('id')
-    old = data.get('oldmeal')
+    old = data.get('extra')
     outputtype = data.get('outputtype')
 
     transcription = await transcribe_audio_from_url(url)
@@ -233,7 +233,7 @@ async def edit_txt():
     data = await request.get_json()
     txt = data.get('txt')
     id = data.get('id')
-    old = data.get('oldmeal')
+    old = data.get('extra')
     outputtype = data.get('outputtype')
 
     print(txt, id, old)
