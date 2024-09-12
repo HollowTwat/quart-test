@@ -96,6 +96,7 @@ async def process_url_etik(url, allergies, usr_id, assistant):
     )
 
     new_message = await run_assistant(thread, assistant)
+    print(new_message)
 
     return new_message
 
