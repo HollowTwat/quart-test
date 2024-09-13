@@ -28,6 +28,7 @@ RATE_SMOL_ASS_ID = os.getenv('RATE_SMOL_ASS_ID')
 RATE_WEEK_ASS_ID = os.getenv('RATE_WEEK_ASS_ID')
 RATE_TWONE_ASS_ID = os.getenv('RATE_TWONE_ASS_ID')
 ETIK_ASS_ID = os.getenv('ETIK_ASS_ID')
+RECIPE_ASS_ID = os.getenv('RECIPE_ASS_ID')
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 aclient = AsyncOpenAI(api_key=OPENAI_API_KEY)
 openai.api_key = OPENAI_API_KEY
@@ -369,6 +370,53 @@ async def etik_proc():
         })
     
     await delete_message(TELETOKEN, id, mssg_id)
+    return Jsoned, 201
+
+@app.route("/recipe_oga", methods=["POST"])
+async def proc_recipe_oga():
+    data = await request.get_json()
+
+    url = data.get('url')
+    id = data.get('id')
+    extra = data.get('extra')
+    transcription = await transcribe_audio_from_url(url)
+    await send_mssg(TELETOKEN, id, f"Транскрипция: {transcription}")
+    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+    print(result)
+    message = result.get("result")
+    mssg_id = message.get("message_id")
+
+    question_with_extra = f"question:{transcription}, extra:{extra}"
+    assistant_response = await no_thread_ass(question_with_extra, RECIPE_ASS_ID)
+    await delete_message(TELETOKEN, id, mssg_id)
+    Jsoned = jsonify(
+        {
+            "extra": str(assistant_response)
+        })
+
+    return Jsoned, 201
+
+@app.route("/recipe_txt", methods=["POST"])
+async def proc_recipe_txt():
+    data = await request.get_json()
+
+    txt = data.get('txt')
+    id = data.get('id')
+    extra = data.get('extra')
+    
+    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+    print(result)
+    message = result.get("result")
+    mssg_id = message.get("message_id")
+
+    question_with_extra = f"question:{txt}, extra:{extra}"
+    assistant_response = await no_thread_ass(question_with_extra, RECIPE_ASS_ID)
+    await delete_message(TELETOKEN, id, mssg_id)
+    Jsoned = jsonify(
+        {
+            "extra": str(assistant_response)
+        })
+
     return Jsoned, 201
 
 
