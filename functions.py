@@ -190,7 +190,7 @@ async def run_assistant(thread, assistant):
     
         while run.status != "completed":
             if run.status == "failed":
-                messages = await client.beta.threads.messages.list(thread_id=thread.id)
+                messages = await aclient.beta.threads.messages.list(thread_id=thread.id)
                 raise Exception(
                     f"Run failed with status: {run.status} and generated {messages.data[0]}")
 
