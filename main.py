@@ -29,6 +29,7 @@ RATE_WEEK_ASS_ID = os.getenv('RATE_WEEK_ASS_ID')
 RATE_TWONE_ASS_ID = os.getenv('RATE_TWONE_ASS_ID')
 ETIK_ASS_ID = os.getenv('ETIK_ASS_ID')
 RECIPE_ASS_ID = os.getenv('RECIPE_ASS_ID')
+RATE_TRIAL_ASS_ID = os.getenv('RATE_TRIAL_ASS_ID')
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 aclient = AsyncOpenAI(api_key=OPENAI_API_KEY)
 openai.api_key = OPENAI_API_KEY
@@ -94,6 +95,7 @@ async def text_input(input):
 
 def get_correct_ass(size):
     ass_mapping = {
+        'trial': f"{RATE_TRIAL_ASS_ID}",
         'big': f"{RATE_DAY_ASS_ID}",
         'mid': f"{RATE_MID_ASS_ID}",
         'smol': f"{RATE_SMOL_ASS_ID}",
