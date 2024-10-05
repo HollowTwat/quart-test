@@ -111,6 +111,15 @@ def get_correct_ass(size):
 async def index() -> str:
     return await render_template("index.html")
 
+@app.route("/stickers", methods=["POST"])
+async def stickers():
+    data = await request.get_json()
+    id = data.get('id')
+    for sticker_id in STICKERLIST:
+        await send_sticker(TELETOKEN, id, sticker_id)
+    return "done", 200
+    
+
 
 @app.route("/get-user/<user_id>")
 async def get_user(user_id):
