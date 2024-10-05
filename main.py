@@ -12,7 +12,7 @@ import aiohttp
 import shelve
 from quart_compress import Compress
 import random
-from sale_stickers import STICKERLIST
+from sale_stickers import STICKERLIST, STICKERLIST_2
 
 sticker_id = "CAACAgIAAxkBAAIHp2aLyyiL4UY-FICRxHkMxTBvi9jkAAIXUAAC8R5hSFFY0DLWfFtzNQQ"
 # "CAACAgIAAxkBAAIE62aF2oFJ5Ltu03_xMZWrC40hoAABzAACGUEAAqIlcUhMnKnBWnZogDUE" CAACAgIAAxkBAAIINGaMcaRe9fVOeaZTFZyWWWM6CrnHAAIBTQACA09oSDqGGMuDHw4tNQQ
