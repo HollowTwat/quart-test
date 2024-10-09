@@ -1,6 +1,6 @@
 from quart import Quart, request, jsonify, render_template
 from cal_pretty import prettify_and_count
-from functions import process_url_etik, no_thread_ass, run_city, create_str, create_thread_with_extra_info, yapp_assistant, use_vision64, use_vision64_from_url, encode_image, send_image_to_gpt4_vision, send_sticker, send_mssg, check_if_thread_exists, store_thread, remove_thread, send_animation_url, delete_message, transcribe_audio, transcribe_audio_from_url, run_assistant, handle_assistant_response, process_url, generate_response
+from functions import remove_reference, process_url_etik, no_thread_ass, run_city, create_str, create_thread_with_extra_info, yapp_assistant, use_vision64, use_vision64_from_url, encode_image, send_image_to_gpt4_vision, send_sticker, send_mssg, check_if_thread_exists, store_thread, remove_thread, send_animation_url, delete_message, transcribe_audio, transcribe_audio_from_url, run_assistant, handle_assistant_response, process_url, generate_response
 # from bot2 import OPENAI_API_KEY, handle_assistant_response, encode_image, use_vision64
 import openai
 from openai import AsyncOpenAI
@@ -352,9 +352,10 @@ async def rate_any():
     mssg_id = message.get("message_id")
 
     assistant_response = await no_thread_ass(question, ass)
+    assistant_response_clean = await remove_reference(assistant_response)
     Jsoned = jsonify(
         {
-            "extra": str(assistant_response)
+            "extra": str(assistant_response_clean)
         })
     await delete_message(TELETOKEN, id, mssg_id)
     return Jsoned, 201
