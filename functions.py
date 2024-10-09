@@ -16,6 +16,8 @@ YAPP_SESH_ASSISTANT_ID = os.getenv('YAPP_SESH_ASSISTANT_ID')
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 aclient = AsyncOpenAI(api_key=OPENAI_API_KEY)
 openai.api_key = OPENAI_API_KEY
+TELETOKEN_2 = os.getenv('TELEBOT_2')
+bug_channel = -1002345895875
 
 
 async def generate_response(message_body, usr_id, assistant):
@@ -206,7 +208,8 @@ async def run_assistant(thread, assistant):
 
     except Exception as e:
         print(f"An error occurred: {e}")
-        return f"exception: {e}"
+        await send_mssg(TELETOKEN_2, bug_channel, f"exception: {e}")
+        return "ой, не здоровится мне сегодня, забыла вопрос твой. Задай еще раз"
 
 
 async def handle_assistant_response(prompt):
