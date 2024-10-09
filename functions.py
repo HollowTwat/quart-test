@@ -7,6 +7,7 @@ import os
 import asyncio
 import aiohttp
 import shelve
+import re
 
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 VISION_ASSISTANT_ID = os.getenv('VISION_ASSISTANT_ID')
@@ -19,6 +20,13 @@ openai.api_key = OPENAI_API_KEY
 TELETOKEN_2 = os.getenv('TELEBOT_2')
 bug_channel = -1002345895875
 
+
+
+
+async def remove_reference(input_string):
+    # Use regular expression to match text between 【 and 】, including the symbols
+    result = await re.sub(r'【.*?】', '', input_string)
+    return result
 
 async def generate_response(message_body, usr_id, assistant):
     thread_id = await check_if_thread_exists(usr_id)
