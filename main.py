@@ -407,7 +407,7 @@ async def proc_recipe_oga():
     mssg_id = message.get("message_id")
 
     question_with_extra = f"question:{transcription}, extra:{extra}"
-    assistant_response = await rec_assistant(question_with_extra, RECIPE_ASS_ID)
+    assistant_response = await rec_assistant(question_with_extra, id, RECIPE_ASS_ID)
     await delete_message(TELETOKEN, id, mssg_id)
     Jsoned = jsonify(
         {
