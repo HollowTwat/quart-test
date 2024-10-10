@@ -140,6 +140,27 @@ async def remove_thread(user_id):
             print("didn't delete, not there")
 
 
+async def check_if_rec_thread_exists(usr_id):
+    with shelve.open("rec_db") as threads_shelf:
+        return threads_shelf.get(usr_id, None)
+
+
+async def store_rec_thread(usr_id, thread_id):
+    with shelve.open("rec_db", writeback=True) as threads_shelf:
+        threads_shelf[usr_id] = thread_id
+
+
+async def remove_rec_thread(user_id):
+    with shelve.open("rec_db", writeback=True) as threads_shelf:
+        if user_id in threads_shelf:
+            del threads_shelf[user_id]
+            print("thread_id deleted")
+        else:
+            print("didn't delete, not there")
+
+
+
+
 async def send_animation_url(token, chat_id, animation_url):
     url = f"https://api.telegram.org/bot{token}/sendAnimation"
     data = {
@@ -420,6 +441,27 @@ async def yapp_assistant(message_body, usr_id, assistant):
     if thread_id is None:
         print(f"No thread for {usr_id}")
         return "no thread err"
+    else:
+        print(f"Retrieving existing thread {usr_id}")
+        thread = await aclient.beta.threads.retrieve(thread_id)
+
+    message = await aclient.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=message_body,
+    )
+    print(message)
+
+    new_message = await run_assistant(thread, assistant)
+    return new_message
+
+async def rec_assistant(message_body, usr_id, assistant):
+    thread_id = await check_if_rec_thread_exists(usr_id)
+
+    if thread_id is None:
+        thread = await aclient.beta.threads.create()
+        thread_id = thread.id
+        await store_rec_thread(usr_id, thread_id)
     else:
         print(f"Retrieving existing thread {usr_id}")
         thread = await aclient.beta.threads.retrieve(thread_id)
