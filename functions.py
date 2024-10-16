@@ -18,7 +18,7 @@ client = openai.OpenAI(api_key=OPENAI_API_KEY)
 aclient = AsyncOpenAI(api_key=OPENAI_API_KEY)
 openai.api_key = OPENAI_API_KEY
 TELETOKEN_2 = os.getenv('TELEBOT_2')
-bug_channel = -1002345895875
+bug_channel = "-1002345895875"
 
 
 
