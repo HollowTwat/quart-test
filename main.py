@@ -184,8 +184,8 @@ async def transcribe():
         Iserror = False
     Final = jsonify(
         {
-            "IsError": Iserror,
-            "Answer": counted            
+            "IsError": f"{Iserror}",
+            "Answer": f"{counted}"    
     })
 
     return Final, 201
@@ -212,8 +212,8 @@ async def process_txt():
         Iserror = False
     Final = jsonify(
         {
-            "IsError": Iserror,
-            "Answer": counted            
+            "IsError": f"{Iserror}",
+            "Answer": f"{counted}"    
     })
     return Final, 201
 
@@ -242,8 +242,8 @@ async def image_proc():
         Iserror = False
     Final = jsonify(
         {
-            "IsError": Iserror,
-            "Answer": counted            
+            "IsError": f"{Iserror}",
+            "Answer": f"{counted}"    
     })
     return Final, 201
 
@@ -272,8 +272,8 @@ async def edit_audio():
         Iserror = False
     Final = jsonify(
         {
-            "IsError": Iserror,
-            "Answer": counted            
+            "IsError": f"{Iserror}",
+            "Answer": f"{counted}"    
     })
     return Final, 201
 
@@ -303,8 +303,8 @@ async def edit_txt():
     
     Final = jsonify(
         {
-            "IsError": Iserror,
-            "Answer": counted          
+            "IsError": f"{Iserror}",
+            "Answer": f"{counted}"    
     })
     return Final, 201
 
@@ -346,8 +346,8 @@ async def yapp():
             }
     Final = jsonify(
         {
-            "IsError": Iserror,
-            "Answer": Jsoned          
+            "IsError": f"{Iserror}",
+            "Answer": f"{Jsoned}"    
     })
     await delete_message(TELETOKEN, id, mssg_id)
     return Final, 201
@@ -378,8 +378,8 @@ async def yapp_oga():
             }
     Final = jsonify(
         {
-            "IsError": Iserror,
-            "Answer": Jsoned           
+            "IsError": f"{Iserror}",
+            "Answer": f"{Jsoned}"    
     })
     await delete_message(TELETOKEN, id, mssg_id)
     return Final, 201
@@ -411,8 +411,8 @@ async def rate_day():
             }
     Final = jsonify(
         {
-            "IsError": Iserror,
-            "Answer": Jsoned    
+            "IsError": f"{Iserror}",
+            "Answer": f"{Jsoned}"    
     })
     await delete_message(TELETOKEN, id, mssg_id)
     return Final, 201
@@ -449,8 +449,8 @@ async def rate_any():
             })
     Final = jsonify(
         {
-            "IsError": Iserror,
-            "Answer": Jsoned           
+            "IsError": f"{Iserror}",
+            "Answer": f"{Jsoned}"    
     })
     await delete_message(TELETOKEN, id, mssg_id)
     return Final, 201
@@ -472,12 +472,12 @@ async def etik_proc():
     
     vision = await process_url_etik(url, allergies, id, ETIK_ASS_ID)
     if vision != "error":
-        Iserror = False
+        Iserror = True
         Jsoned = {
                 "extra": str(vision)
             }
     elif vision == "error":
-        Iserror = True
+        Iserror = False
         Jsoned = {
                 "error": str(vision)
             }
@@ -519,8 +519,8 @@ async def proc_recipe_oga():
             }
     Final = jsonify(
         {
-            "IsError": Iserror,
-            "Answer": Jsoned    
+            "IsError": f"{Iserror}",
+            "Answer": f"{Jsoned}"    
     })
     return Final, 201
 
@@ -552,8 +552,8 @@ async def proc_recipe_txt():
             }
     Final = jsonify(
         {
-            "IsError": Iserror,
-            "Answer": Jsoned       
+            "IsError": f"{Iserror}",
+            "Answer": f"{Jsoned}"    
     })
     return Final, 201
 
@@ -580,8 +580,8 @@ async def transcribe_2():
         Iserror = False
     Final = jsonify(
         {
-            "IsError": Iserror,
-            "Answer": counted           
+            "IsError": f"{Iserror}",
+            "Answer": f"{counted}"    
     })
     return Final, 201
 
@@ -607,8 +607,8 @@ async def process_txt_2():
         Iserror = False
     Final = jsonify(
         {
-            "IsError": Iserror,
-            "Answer": counted           
+            "IsError": f"{Iserror}",
+            "Answer": f"{counted}"    
     })
     return Final, 201
 
@@ -637,8 +637,8 @@ async def image_proc_2():
         Iserror = False
     Final = jsonify(
         {
-            "IsError": Iserror,
-            "Answer": counted           
+            "IsError": f"{Iserror}",
+            "Answer": f"{counted}"    
     })
     return Final, 201
 
