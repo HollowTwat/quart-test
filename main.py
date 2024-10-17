@@ -483,8 +483,8 @@ async def etik_proc():
             }
     Final = jsonify(
         {
-            "IsError": Iserror,
-            "Answer": Jsoned    
+            "IsError": f"{Iserror}",
+            "Answer": f"{Jsoned}"    
     })
     await delete_message(TELETOKEN, id, mssg_id)
     print(Final)
