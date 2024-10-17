@@ -292,10 +292,16 @@ async def yapp():
     mssg_id = message.get("message_id")
 
     response = await yapp_assistant(question, id, YAPP_SESH_ASSISTANT_ID)
-    Jsoned = jsonify(
-        {
-            "extra": str(response)
-        })
+    if response != "error":
+        Jsoned = jsonify(
+            {
+                "extra": str(response)
+            })
+    elif response == "error":
+        Jsoned = jsonify(
+            {
+                "error": str(response)
+            })
     await delete_message(TELETOKEN, id, mssg_id)
     return Jsoned, 201
 
@@ -313,10 +319,16 @@ async def yapp_oga():
     mssg_id = message.get("message_id")
 
     response = await yapp_assistant(transcription, id, YAPP_SESH_ASSISTANT_ID)
-    Jsoned = jsonify(
-        {
-            "extra": str(response)
-        })
+    if response != "error":
+        Jsoned = jsonify(
+            {
+                "extra": str(response)
+            })
+    elif response == "error":
+        Jsoned = jsonify(
+            {
+                "error": str(response)
+            })
     await delete_message(TELETOKEN, id, mssg_id)
     return Jsoned, 201
 
@@ -335,10 +347,16 @@ async def rate_day():
     mssg_id = message.get("message_id")
 
     assistant_response = await no_thread_ass(question, RATE_DAY_ASS_ID)
-    Jsoned = jsonify(
-        {
-            "extra": str(assistant_response)
-        })
+    if assistant_response != "error":
+        Jsoned = jsonify(
+            {
+                "extra": str(assistant_response)
+            })
+    elif assistant_response == "error":
+        Jsoned = jsonify(
+            {
+                "error": str(assistant_response)
+            })
     await delete_message(TELETOKEN, id, mssg_id)
     return Jsoned, 201
 
@@ -359,11 +377,17 @@ async def rate_any():
     mssg_id = message.get("message_id")
 
     assistant_response = await no_thread_ass(question, ass)
-    assistant_response_clean = await remove_reference(assistant_response)
-    Jsoned = jsonify(
-        {
-            "extra": str(assistant_response_clean)
-        })
+    if assistant_response != "error":
+        assistant_response_clean = await remove_reference(assistant_response)
+        Jsoned = jsonify(
+            {
+                "extra": str(assistant_response_clean)
+            })
+    elif assistant_response == "error":
+        Jsoned = jsonify(
+            {
+                "error": str(assistant_response)
+            })
     await delete_message(TELETOKEN, id, mssg_id)
     return Jsoned, 201
 
@@ -383,11 +407,16 @@ async def etik_proc():
     outputtype = data.get('outputtype')
     
     vision = await process_url_etik(url, allergies, id, ETIK_ASS_ID)
-
-    Jsoned = jsonify(
-        {
-            "extra": str(vision)
-        })
+    if vision != "error":
+        Jsoned = jsonify(
+            {
+                "extra": str(vision)
+            })
+    elif vision == "error":
+        Jsoned = jsonify(
+            {
+                "error": str(vision)
+            })
     
     await delete_message(TELETOKEN, id, mssg_id)
     return Jsoned, 201
@@ -409,10 +438,16 @@ async def proc_recipe_oga():
     question_with_extra = f"question:{transcription}, extra:{extra}"
     assistant_response = await rec_assistant(question_with_extra, id, RECIPE_ASS_ID)
     await delete_message(TELETOKEN, id, mssg_id)
-    Jsoned = jsonify(
-        {
-            "extra": str(assistant_response)
-        })
+    if assistant_response != "error":
+        Jsoned = jsonify(
+            {
+                "extra": str(assistant_response)
+            })
+    elif assistant_response == "error":
+        Jsoned = jsonify(
+            {
+                "error": str(assistant_response)
+            })
 
     return Jsoned, 201
 
@@ -432,10 +467,16 @@ async def proc_recipe_txt():
     question_with_extra = f"question:{txt}, extra:{extra}"
     assistant_response = await rec_assistant(question_with_extra, id, RECIPE_ASS_ID)
     await delete_message(TELETOKEN, id, mssg_id)
-    Jsoned = jsonify(
-        {
-            "extra": str(assistant_response)
-        })
+    if assistant_response != "error":
+        Jsoned = jsonify(
+            {
+                "extra": str(assistant_response)
+            })
+    elif assistant_response == "error":
+        Jsoned = jsonify(
+            {
+                "error": str(assistant_response)
+            })
 
     return Jsoned, 201
 
