@@ -178,12 +178,17 @@ async def transcribe():
     assistant_response = await generate_response(transcription, id, VISION_ASSISTANT_ID)
     counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
     await delete_message(TELETOKEN, id, mssg_id)
-    # response = {
-    #     "transcription": transcription,
-    #     "assistant_response": str(assistant_response)
-    # }
+    if isinstance(counted, dict) and counted.get("error") == "error":
+        Iserror = True
+    else:
+        Iserror = False
+    Final = jsonify(
+        {
+            "IsError": Iserror,
+            "Answer": {counted}            
+    })
 
-    return counted, 201
+    return Final, 201
 
 
 @app.route("/txt", methods=["POST"])
@@ -201,7 +206,16 @@ async def process_txt():
     counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
     # vision1 = jsonify(vision).content
     await delete_message(TELETOKEN, id, mssg_id)
-    return counted, 201
+    if isinstance(counted, dict) and counted.get("error") == "error":
+        Iserror = True
+    else:
+        Iserror = False
+    Final = jsonify(
+        {
+            "IsError": Iserror,
+            "Answer": {counted}            
+    })
+    return Final, 201
 
 
 @app.route("/imggg", methods=["POST"])
@@ -222,7 +236,16 @@ async def image_proc():
     vision = await process_url(url, id, VISION_ASSISTANT_ID)
     counted = await prettify_and_count(vision, detailed_format=(outputtype == "0"))
     await delete_message(TELETOKEN, id, mssg_id)
-    return counted, 201
+    if isinstance(counted, dict) and counted.get("error") == "error":
+        Iserror = True
+    else:
+        Iserror = False
+    Final = jsonify(
+        {
+            "IsError": Iserror,
+            "Answer": {counted}            
+    })
+    return Final, 201
 
 
 @app.route("/edit_oga", methods=["POST"])
@@ -243,7 +266,16 @@ async def edit_audio():
     assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {transcription}", id, VISION_ASSISTANT_ID)
     counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
     await delete_message(TELETOKEN, id, mssg_id)
-    return counted, 201
+    if isinstance(counted, dict) and counted.get("error") == "error":
+        Iserror = True
+    else:
+        Iserror = False
+    Final = jsonify(
+        {
+            "IsError": Iserror,
+            "Answer": {counted}            
+    })
+    return Final, 201
 
 
 @app.route("/edit_txt", methods=["POST"])
@@ -264,7 +296,17 @@ async def edit_txt():
     assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {txt}", id, VISION_ASSISTANT_ID)
     counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
     await delete_message(TELETOKEN, id, mssg_id)
-    return counted, 201
+    if isinstance(counted, dict) and counted.get("error") == "error":
+        Iserror = True
+    else:
+        Iserror = False
+    
+    Final = jsonify(
+        {
+            "IsError": Iserror,
+            "Answer": {counted}            
+    })
+    return Final, 201
 
 
 @app.route("/day1/yapp_create", methods=["POST"])
@@ -293,17 +335,24 @@ async def yapp():
 
     response = await yapp_assistant(question, id, YAPP_SESH_ASSISTANT_ID)
     if response != "error":
+        Iserror = False
         Jsoned = jsonify(
             {
                 "extra": str(response)
             })
     elif response == "error":
+        Iserror = True
         Jsoned = jsonify(
             {
                 "error": str(response)
             })
+    Final = jsonify(
+        {
+            "IsError": Iserror,
+            "Answer": Jsoned           
+    })
     await delete_message(TELETOKEN, id, mssg_id)
-    return Jsoned, 201
+    return Final, 201
 
 
 @app.route("/day1/yapp_oga", methods=["POST"])
@@ -320,17 +369,24 @@ async def yapp_oga():
 
     response = await yapp_assistant(transcription, id, YAPP_SESH_ASSISTANT_ID)
     if response != "error":
+        Iserror = False
         Jsoned = jsonify(
             {
                 "extra": str(response)
             })
     elif response == "error":
+        Iserror = True
         Jsoned = jsonify(
             {
                 "error": str(response)
             })
+    Final = jsonify(
+        {
+            "IsError": Iserror,
+            "Answer": Jsoned           
+    })
     await delete_message(TELETOKEN, id, mssg_id)
-    return Jsoned, 201
+    return Final, 201
 
 
 @app.route("/rate_day", methods=["POST"])
@@ -348,17 +404,24 @@ async def rate_day():
 
     assistant_response = await no_thread_ass(question, RATE_DAY_ASS_ID)
     if assistant_response != "error":
+        Iserror = False
         Jsoned = jsonify(
             {
                 "extra": str(assistant_response)
             })
     elif assistant_response == "error":
+        Iserror = True
         Jsoned = jsonify(
             {
                 "error": str(assistant_response)
             })
+    Final = jsonify(
+        {
+            "IsError": Iserror,
+            "Answer": Jsoned           
+    })
     await delete_message(TELETOKEN, id, mssg_id)
-    return Jsoned, 201
+    return Final, 201
 
 
 @app.route("/rate_any", methods=["POST"])
@@ -378,18 +441,25 @@ async def rate_any():
 
     assistant_response = await no_thread_ass(question, ass)
     if assistant_response != "error":
+        Iserror = False
         assistant_response_clean = await remove_reference(assistant_response)
         Jsoned = jsonify(
             {
                 "extra": str(assistant_response_clean)
             })
     elif assistant_response == "error":
+        Iserror = True
         Jsoned = jsonify(
             {
                 "error": str(assistant_response)
             })
+    Final = jsonify(
+        {
+            "IsError": Iserror,
+            "Answer": Jsoned           
+    })
     await delete_message(TELETOKEN, id, mssg_id)
-    return Jsoned, 201
+    return Final, 201
 
 @app.route("/etik", methods=["POST"])
 async def etik_proc():
@@ -408,18 +478,24 @@ async def etik_proc():
     
     vision = await process_url_etik(url, allergies, id, ETIK_ASS_ID)
     if vision != "error":
+        Iserror = False
         Jsoned = jsonify(
             {
                 "extra": str(vision)
             })
     elif vision == "error":
+        Iserror = True
         Jsoned = jsonify(
             {
                 "error": str(vision)
             })
-    
+    Final = jsonify(
+        {
+            "IsError": Iserror,
+            "Answer": Jsoned           
+    })
     await delete_message(TELETOKEN, id, mssg_id)
-    return Jsoned, 201
+    return Final, 201
 
 @app.route("/recipe_oga", methods=["POST"])
 async def proc_recipe_oga():
@@ -439,17 +515,23 @@ async def proc_recipe_oga():
     assistant_response = await rec_assistant(question_with_extra, id, RECIPE_ASS_ID)
     await delete_message(TELETOKEN, id, mssg_id)
     if assistant_response != "error":
+        Iserror = False
         Jsoned = jsonify(
             {
                 "extra": str(assistant_response)
             })
     elif assistant_response == "error":
+        Iserror = True
         Jsoned = jsonify(
             {
                 "error": str(assistant_response)
             })
-
-    return Jsoned, 201
+    Final = jsonify(
+        {
+            "IsError": Iserror,
+            "Answer": Jsoned           
+    })
+    return Final, 201
 
 @app.route("/recipe_txt", methods=["POST"])
 async def proc_recipe_txt():
@@ -468,17 +550,23 @@ async def proc_recipe_txt():
     assistant_response = await rec_assistant(question_with_extra, id, RECIPE_ASS_ID)
     await delete_message(TELETOKEN, id, mssg_id)
     if assistant_response != "error":
+        Iserror = False
         Jsoned = jsonify(
             {
                 "extra": str(assistant_response)
             })
     elif assistant_response == "error":
+        Iserror = True
         Jsoned = jsonify(
             {
                 "error": str(assistant_response)
             })
-
-    return Jsoned, 201
+    Final = jsonify(
+        {
+            "IsError": Iserror,
+            "Answer": Jsoned           
+    })
+    return Final, 201
 
 @app.route("/oga_2", methods=["POST"])
 async def transcribe_2():
@@ -497,12 +585,16 @@ async def transcribe_2():
     assistant_response = await generate_response(transcription, id, VISION_ASSISTANT_ID)
     counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
     await delete_message(TELETOKEN_2, id, mssg_id)
-    # response = {
-    #     "transcription": transcription,
-    #     "assistant_response": str(assistant_response)
-    # }
-
-    return counted, 201
+    if isinstance(counted, dict) and counted.get("error") == "error":
+        Iserror = True
+    else:
+        Iserror = False
+    Final = jsonify(
+        {
+            "IsError": Iserror,
+            "Answer": counted           
+    })
+    return Final, 201
 
 
 @app.route("/txt_2", methods=["POST"])
@@ -520,7 +612,16 @@ async def process_txt_2():
     counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
     # vision1 = jsonify(vision).content
     await delete_message(TELETOKEN_2, id, mssg_id)
-    return counted, 201
+    if isinstance(counted, dict) and counted.get("error") == "error":
+        Iserror = True
+    else:
+        Iserror = False
+    Final = jsonify(
+        {
+            "IsError": Iserror,
+            "Answer": counted           
+    })
+    return Final, 201
 
 
 @app.route("/imggg_2", methods=["POST"])
@@ -541,7 +642,16 @@ async def image_proc_2():
     vision = await process_url(url, id, VISION_ASSISTANT_ID)
     counted = await prettify_and_count(vision, detailed_format=(outputtype == "0"))
     await delete_message(TELETOKEN_2, id, mssg_id)
-    return counted, 201
+    if isinstance(counted, dict) and counted.get("error") == "error":
+        Iserror = True
+    else:
+        Iserror = False
+    Final = jsonify(
+        {
+            "IsError": Iserror,
+            "Answer": counted           
+    })
+    return Final, 201
 
 @app.route("/test", methods=["POST"])
 async def test():
