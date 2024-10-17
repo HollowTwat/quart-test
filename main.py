@@ -495,6 +495,7 @@ async def etik_proc():
             "Answer": str(Jsoned)    
     })
     await delete_message(TELETOKEN, id, mssg_id)
+    print(Final)
     return Final, 201
 
 @app.route("/recipe_oga", methods=["POST"])
