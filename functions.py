@@ -238,7 +238,7 @@ async def run_assistant(thread, assistant):
     except Exception as e:
         print(f"An error occurred: {e}")
         await send_mssg(TELETOKEN_2, bug_channel, f"exception: {e}")
-        return "ой, не здоровится мне сегодня, забыла вопрос твой. Задай еще раз"
+        return "error"
 
 
 async def handle_assistant_response(prompt):
