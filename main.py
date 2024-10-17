@@ -472,12 +472,12 @@ async def etik_proc():
     
     vision = await process_url_etik(url, allergies, id, ETIK_ASS_ID)
     if vision != "error":
-        Iserror = True
+        Iserror = False
         Jsoned = {
                 "extra": str(vision)
             }
     elif vision == "error":
-        Iserror = False
+        Iserror = True
         Jsoned = {
                 "error": str(vision)
             }
