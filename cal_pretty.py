@@ -45,4 +45,4 @@ async def prettify_and_count(data, detailed_format=True):
         json_data["pretty"] = pretty_output
 
         print(json_data)
-        return resulting_json
+        return json_data
