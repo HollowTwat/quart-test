@@ -4,10 +4,9 @@ from quart import jsonify
 async def prettify_and_count(data, detailed_format=True):
     if data == "error":
         print("error in input of prettify")
-        Jsoned = jsonify(
-            {
+        Jsoned = {
                 "error": "error"
-            })
+            }
         return Jsoned
     else :
         json_data = json.loads(data)
@@ -45,6 +44,5 @@ async def prettify_and_count(data, detailed_format=True):
 
         json_data["pretty"] = pretty_output
 
-        resulting_json = json.dumps(json_data, ensure_ascii=False, indent=2)
-        print(resulting_json)
+        print(json_data)
         return resulting_json
