@@ -186,7 +186,7 @@ async def transcribe():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": str(counted)    
+            "Answer": counted    
     })
 
     return Final, 201
@@ -214,7 +214,7 @@ async def process_txt():
     Final = jsonify(
         {
             "IsError": str(Iserror),
-            "Answer": str(counted)    
+            "Answer": counted    
     })
     return Final, 201
 
@@ -244,7 +244,7 @@ async def image_proc():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": str(counted)    
+            "Answer": counted    
     })
     return Final, 201
 
@@ -274,7 +274,7 @@ async def edit_audio():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": str(counted)    
+            "Answer": counted    
     })
     return Final, 201
 
@@ -305,7 +305,7 @@ async def edit_txt():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": str(counted)    
+            "Answer": counted    
     })
     return Final, 201
 
@@ -348,7 +348,7 @@ async def yapp():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": str(Jsoned)    
+            "Answer": Jsoned    
     })
     await delete_message(TELETOKEN, id, mssg_id)
     return Final, 201
@@ -380,7 +380,7 @@ async def yapp_oga():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": str(Jsoned)    
+            "Answer": Jsoned    
     })
     await delete_message(TELETOKEN, id, mssg_id)
     return Final, 201
@@ -413,7 +413,7 @@ async def rate_day():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": str(Jsoned)    
+            "Answer": Jsoned    
     })
     await delete_message(TELETOKEN, id, mssg_id)
     return Final, 201
@@ -449,7 +449,7 @@ async def rate_any():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": str(Jsoned)    
+            "Answer": Jsoned    
     })
     await delete_message(TELETOKEN, id, mssg_id)
     return Final, 201
@@ -519,7 +519,7 @@ async def proc_recipe_oga():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": str(Jsoned)    
+            "Answer": Jsoned    
     })
     return Final, 201
 
@@ -552,7 +552,7 @@ async def proc_recipe_txt():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": str(Jsoned)    
+            "Answer": Jsoned    
     })
     return Final, 201
 
@@ -580,7 +580,7 @@ async def transcribe_2():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": str(counted)    
+            "Answer": counted    
     })
     return Final, 201
 
@@ -607,7 +607,7 @@ async def process_txt_2():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": str(counted)    
+            "Answer": counted    
     })
     return Final, 201
 
@@ -637,7 +637,7 @@ async def image_proc_2():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": str(counted)    
+            "Answer": counted    
     })
     return Final, 201
 
