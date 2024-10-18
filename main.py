@@ -1,6 +1,7 @@
 from quart import Quart, request, jsonify, render_template
 from cal_pretty import prettify_and_count
 from functions import *
+import json
 # from bot2 import OPENAI_API_KEY, handle_assistant_response, encode_image, use_vision64
 import openai
 from openai import AsyncOpenAI
@@ -182,7 +183,7 @@ async def transcribe():
         Iserror = True
     else:
         Iserror = False
-    Final = jsonify(
+    Final = json.dumps(
         {
             "IsError": str(Iserror),
             "Answer": str(counted)    
@@ -240,7 +241,7 @@ async def image_proc():
         Iserror = True
     else:
         Iserror = False
-    Final = jsonify(
+    Final = json.dumps(
         {
             "IsError": str(Iserror),
             "Answer": str(counted)    
@@ -270,7 +271,7 @@ async def edit_audio():
         Iserror = True
     else:
         Iserror = False
-    Final = jsonify(
+    Final = json.dumps(
         {
             "IsError": str(Iserror),
             "Answer": str(counted)    
@@ -301,7 +302,7 @@ async def edit_txt():
     else:
         Iserror = False
     
-    Final = jsonify(
+    Final = json.dumps(
         {
             "IsError": str(Iserror),
             "Answer": str(counted)    
@@ -344,7 +345,7 @@ async def yapp():
         Jsoned = {
                 "error": str(response)
             }
-    Final = jsonify(
+    Final = json.dumps(
         {
             "IsError": str(Iserror),
             "Answer": str(Jsoned)    
@@ -376,7 +377,7 @@ async def yapp_oga():
         Jsoned = {
                 "error": str(response)
             }
-    Final = jsonify(
+    Final = json.dumps(
         {
             "IsError": str(Iserror),
             "Answer": str(Jsoned)    
@@ -409,7 +410,7 @@ async def rate_day():
         Jsoned = {
                 "error": str(assistant_response)
             }
-    Final = jsonify(
+    Final = json.dumps(
         {
             "IsError": str(Iserror),
             "Answer": str(Jsoned)    
@@ -437,17 +438,15 @@ async def rate_any():
     if assistant_response != "error":
         Iserror = False
         assistant_response_clean = await remove_reference(assistant_response)
-        Jsoned = jsonify(
-            {
+        Jsoned = {
                 "extra": str(assistant_response_clean)
-            })
+            }
     elif assistant_response == "error":
         Iserror = True
-        Jsoned = jsonify(
-            {
+        Jsoned = {
                 "error": str(assistant_response)
-            })
-    Final = jsonify(
+            }
+    Final = json.dumps(
         {
             "IsError": str(Iserror),
             "Answer": str(Jsoned)    
@@ -481,7 +480,7 @@ async def etik_proc():
         Jsoned = {
                 "error": str(vision)
             }
-    Final = jsonify(
+    Final = json.dumps(
         {
             "IsError": str(Iserror),
             "Answer": str(Jsoned)    
@@ -517,7 +516,7 @@ async def proc_recipe_oga():
         Jsoned = {
                 "error": str(assistant_response)
             }
-    Final = jsonify(
+    Final = json.dumps(
         {
             "IsError": str(Iserror),
             "Answer": str(Jsoned)    
@@ -550,7 +549,7 @@ async def proc_recipe_txt():
         Jsoned = {
                 "error": str(assistant_response)
             }
-    Final = jsonify(
+    Final = json.dumps(
         {
             "IsError": str(Iserror),
             "Answer": str(Jsoned)    
@@ -578,7 +577,7 @@ async def transcribe_2():
         Iserror = True
     else:
         Iserror = False
-    Final = jsonify(
+    Final = json.dumps(
         {
             "IsError": str(Iserror),
             "Answer": str(counted)    
@@ -605,7 +604,7 @@ async def process_txt_2():
         Iserror = True
     else:
         Iserror = False
-    Final = jsonify(
+    Final = json.dumps(
         {
             "IsError": str(Iserror),
             "Answer": str(counted)    
@@ -635,7 +634,7 @@ async def image_proc_2():
         Iserror = True
     else:
         Iserror = False
-    Final = jsonify(
+    Final = json.dumps(
         {
             "IsError": str(Iserror),
             "Answer": str(counted)    
