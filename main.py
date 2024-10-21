@@ -31,6 +31,7 @@ RATE_TWONE_ASS_ID = os.getenv('RATE_TWONE_ASS_ID')
 ETIK_ASS_ID = os.getenv('ETIK_ASS_ID')
 RECIPE_ASS_ID = os.getenv('RECIPE_ASS_ID')
 RATE_TRIAL_ASS_ID = os.getenv('RATE_TRIAL_ASS_ID')
+VISION_ASS_ID_2 = os.getenv("VISION_ASS_ID_2")
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 aclient = AsyncOpenAI(api_key=OPENAI_API_KEY)
 openai.api_key = OPENAI_API_KEY
@@ -175,9 +176,12 @@ async def transcribe():
     message = result.get("result")
     mssg_id = message.get("message_id")
     outputtype = data.get('outputtype')
-
-    assistant_response = await generate_response(transcription, id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
+    if outputtype == "1":
+        assistant_response = await generate_response(transcription, id, VISION_ASSISTANT_ID)
+        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
+    else:
+        assistant_response = await generate_response(transcription, id, VISION_ASS_ID_2)
+        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
     await delete_message(TELETOKEN, id, mssg_id)
     if isinstance(counted, dict) and counted.get("error") == "error":
         Iserror = True
@@ -203,8 +207,12 @@ async def process_txt():
     mssg_id = message.get("message_id")
     outputtype = data.get('outputtype')
 
-    assistant_response = await generate_response(txt, id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
+    if outputtype == "1":
+        assistant_response = await generate_response(transcription, id, VISION_ASSISTANT_ID)
+        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
+    else:
+        assistant_response = await generate_response(transcription, id, VISION_ASS_ID_2)
+        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
     # vision1 = jsonify(vision).content
     await delete_message(TELETOKEN, id, mssg_id)
     if isinstance(counted, dict) and counted.get("error") == "error":
@@ -234,8 +242,12 @@ async def image_proc():
     mssg_id = message.get("message_id")
     outputtype = data.get('outputtype')
 
-    vision = await process_url(url, id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(vision, detailed_format=(outputtype == "0"))
+    if outputtype == "1":
+        assistant_response = await generate_response(transcription, id, VISION_ASSISTANT_ID)
+        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
+    else:
+        assistant_response = await generate_response(transcription, id, VISION_ASS_ID_2)
+        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
     await delete_message(TELETOKEN, id, mssg_id)
     if isinstance(counted, dict) and counted.get("error") == "error":
         Iserror = True
