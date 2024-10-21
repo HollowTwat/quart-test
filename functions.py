@@ -223,7 +223,7 @@ async def run_assistant(thread, assistant):
             if run.status == "failed":
                 messages = await aclient.beta.threads.messages.list(thread_id=thread.id)
                 raise Exception(
-                    f"Run failed with status: {run.status} and generated {messages.data[0]}")
+                    f"Run failed with status: {run.status} and generated {messages.data[0]} and also {run.failed_at} and {run.incomplete_details}")
 
             print(run.status)
             await asyncio.sleep(1.5)
@@ -233,6 +233,7 @@ async def run_assistant(thread, assistant):
         messages = await aclient.beta.threads.messages.list(thread_id=thread.id)
         latest_mssg = messages.data[0].content[0].text.value
         print(f"generated: {latest_mssg}")
+        await send_mssg(TELETOKEN_2, bug_channel, f"тест на работу send_mssg")
         return latest_mssg
 
     except Exception as e:
