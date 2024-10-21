@@ -25,22 +25,25 @@ async def prettify_and_count(data, detailed_format=True):
             carbs = round(nutritional_value["carbs"])
             protein = round(nutritional_value["protein"])
 
-            kcal = round(fats * 9 + carbs * 4 + protein * 4)
+            if detailed_format:
+                kcal = round(nutritional_value["kkal"])
+            else:
+                kcal = round(fats * 9 + carbs * 4 + protein * 4)
             nutritional_value["kcal"] = kcal
 
-            if detailed_format:
-                pretty_str = f"{item['description']} {item['weight']}г - {kcal} ккал ({fats}г жиров {carbs}г углеводов {protein}г белков)"
-            else:
-                pretty_str = (
+            # if detailed_format:
+            #     pretty_str = f"{item['description']} {item['weight']}г - {kcal} ккал ({fats}г жиров {carbs}г углеводов {protein}г белков)"
+            # else:
+            pretty_str = (
                     f"{item['description']} {item['weight']} г:</b>\n"
                     f" {kcal} ккал ({fats}г жиров / {carbs}г углеводов / {protein}г белков);\n"
                 )
             pretty_list.append(pretty_str)
         
-        if detailed_format:
-            pretty_output = "\n".join([f"{i+1}) {item}" for i, item in enumerate(pretty_list)])
-        else:
-            pretty_output = "<b>Прием пищи:</b>\n\n" + "\n".join([f"{i+1}.<b> {item}" for i, item in enumerate(pretty_list)])
+        # if detailed_format:
+        #     pretty_output = "\n".join([f"{i+1}) {item}" for i, item in enumerate(pretty_list)])
+        # else:
+        pretty_output = "<b>Прием пищи:</b>\n\n" + "\n".join([f"{i+1}.<b> {item}" for i, item in enumerate(pretty_list)])
 
         json_data["pretty"] = pretty_output
 
