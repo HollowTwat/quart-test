@@ -208,10 +208,10 @@ async def process_txt():
     outputtype = data.get('outputtype')
 
     if outputtype == "1":
-        assistant_response = await generate_response(transcription, id, VISION_ASSISTANT_ID)
+        assistant_response = await generate_response(txt, id, VISION_ASSISTANT_ID)
         counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
     else:
-        assistant_response = await generate_response(transcription, id, VISION_ASS_ID_2)
+        assistant_response = await generate_response(txt, id, VISION_ASS_ID_2)
         counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
     # vision1 = jsonify(vision).content
     await delete_message(TELETOKEN, id, mssg_id)
@@ -243,11 +243,11 @@ async def image_proc():
     outputtype = data.get('outputtype')
 
     if outputtype == "1":
-        assistant_response = await generate_response(transcription, id, VISION_ASSISTANT_ID)
-        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
+        vision = await process_url(url, id, VISION_ASSISTANT_ID)
+        counted = await prettify_and_count(vision, detailed_format=(outputtype == "0"))
     else:
-        assistant_response = await generate_response(transcription, id, VISION_ASS_ID_2)
-        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
+        vision = await process_url(url, id, VISION_ASS_ID_2)
+        counted = await prettify_and_count(vision, detailed_format=(outputtype == "0"))
     await delete_message(TELETOKEN, id, mssg_id)
     if isinstance(counted, dict) and counted.get("error") == "error":
         Iserror = True
