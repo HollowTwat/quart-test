@@ -276,8 +276,12 @@ async def edit_audio():
     result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     message = result.get("result")
     mssg_id = message.get("message_id")
-    assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {transcription}", id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
+    if outputtype == "1":
+        assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {transcription}", id, VISION_ASSISTANT_ID)
+        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
+    else:
+        assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {transcription}", id, VISION_ASS_ID_2)
+        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
     await delete_message(TELETOKEN, id, mssg_id)
     if isinstance(counted, dict) and counted.get("error") == "error":
         Iserror = True
@@ -305,9 +309,12 @@ async def edit_txt():
     result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
     message = result.get("result")
     mssg_id = message.get("message_id")
-
-    assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {txt}", id, VISION_ASSISTANT_ID)
-    counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
+    if outputtype == "1":
+        assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {txt}", id, VISION_ASSISTANT_ID)
+        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
+    else: 
+        assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {txt}", id, VISION_ASS_ID_2)
+        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
     await delete_message(TELETOKEN, id, mssg_id)
     if isinstance(counted, dict) and counted.get("error") == "error":
         Iserror = True
