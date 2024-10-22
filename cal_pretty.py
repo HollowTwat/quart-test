@@ -26,7 +26,7 @@ async def prettify_and_count(data, detailed_format=True):
             protein = round(nutritional_value["protein"])
 
             if detailed_format:
-                kcal = round(nutritional_value["kkal"])
+                kcal = round(nutritional_value["kcal"])
             else:
                 kcal = round(fats * 9 + carbs * 4 + protein * 4)
             nutritional_value["kcal"] = kcal
