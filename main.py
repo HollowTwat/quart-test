@@ -256,7 +256,7 @@ async def image_proc():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": counted    
+            "Answer": counted if isinstance(counted, dict) else json.loads(counted)    
     })
     return Final, 201
 
