@@ -190,7 +190,7 @@ async def transcribe():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": counted    
+            "Answer": counted if isinstance(counted, dict) else json.loads(counted)    
     })
 
     return Final, 201
@@ -222,7 +222,7 @@ async def process_txt():
     Final = jsonify(
         {
             "IsError": str(Iserror),
-            "Answer": counted    
+            "Answer": counted if isinstance(counted, dict) else json.loads(counted)    
     })
     return Final, 201
 
@@ -290,7 +290,7 @@ async def edit_audio():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": counted    
+            "Answer": counted if isinstance(counted, dict) else json.loads(counted)    
     })
     return Final, 201
 
@@ -324,7 +324,7 @@ async def edit_txt():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": counted    
+            "Answer": counted if isinstance(counted, dict) else json.loads(counted)    
     })
     return Final, 201
 
@@ -599,7 +599,7 @@ async def transcribe_2():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": counted    
+            "Answer": counted if isinstance(counted, dict) else json.loads(counted)    
     })
     return Final, 201
 
@@ -626,7 +626,7 @@ async def process_txt_2():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": counted    
+            "Answer": counted if isinstance(counted, dict) else json.loads(counted)    
     })
     return Final, 201
 
@@ -656,7 +656,7 @@ async def image_proc_2():
     Final = json.dumps(
         {
             "IsError": str(Iserror),
-            "Answer": counted    
+            "Answer": counted if isinstance(counted, dict) else json.loads(counted)    
     })
     return Final, 201
 
