@@ -14,8 +14,11 @@ async def prettify_and_count(data, detailed_format=True):
         if not json_data.get("food", []):
             json_data["pretty"] = "Не могу найти еду"
             resulting_json = json.dumps(json_data, ensure_ascii=False, indent=2)
+            json_data["error"] = "не могу найти еду"
             print(resulting_json)
-            return resulting_json
+            return json_data
+            
+            # return resulting_json
         
         pretty_list = []
 
