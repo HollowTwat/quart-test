@@ -346,7 +346,7 @@ async def yapp_thread_input():
 
 
 @app.route("/yapp_remove", methods=["POST"])
-async def thread_remove():
+async def yapp_thread_remove():
     data = await request.get_json()
     id = data.get('id')
     await remove_yapp_thread(id)
