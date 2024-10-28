@@ -337,9 +337,20 @@ async def yapp_thread_input():
     id = data.get('id')
     user_info_str = await create_str(data)
     info_to_send_to_gpt = f"Инфа: {user_info_str}"  # republish
-    response = await create_thread_with_extra_info(user_info_str, id, YAPP_SESH_ASSISTANT_ID)
+    thread_id = await check_if_yapp_thread_exists(usr_id)
+    if thread_id is None:
+        response = await create_thread_with_extra_info(user_info_str, id, YAPP_SESH_ASSISTANT_ID)
+    else:
+        response = "thread allready exists"
     return response, 201
 
+
+@app.route("/yapp_remove", methods=["POST"])
+async def thread_remove():
+    data = await request.get_json()
+    id = data.get('id')
+    await remove_thread(id)
+    return "removed", 201
 
 @app.route("/day1/yapp", methods=["POST"])
 async def yapp():
