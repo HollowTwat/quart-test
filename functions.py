@@ -139,6 +139,14 @@ async def remove_thread(user_id):
         else:
             print("didn't delete, not there")
 
+async def remove_yapp_thread(user_id):
+    with shelve.open("yapp_db", writeback=True) as threads_shelf:
+        if user_id in threads_shelf:
+            del threads_shelf[user_id]
+            print("thread_id deleted")
+        else:
+            print("didn't delete, not there")
+
 
 async def check_if_rec_thread_exists(usr_id):
     with shelve.open("rec_db") as threads_shelf:
