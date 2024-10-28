@@ -337,7 +337,7 @@ async def yapp_thread_input():
     id = data.get('id')
     user_info_str = await create_str(data)
     info_to_send_to_gpt = f"Инфа: {user_info_str}"  # republish
-    thread_id = await check_if_yapp_thread_exists(usr_id)
+    thread_id = await check_if_yapp_thread_exists(id)
     if thread_id is None:
         response = await create_thread_with_extra_info(user_info_str, id, YAPP_SESH_ASSISTANT_ID)
     else:
