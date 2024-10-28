@@ -349,7 +349,7 @@ async def yapp_thread_input():
 async def thread_remove():
     data = await request.get_json()
     id = data.get('id')
-    await remove_thread(id)
+    await remove_yapp_thread(id)
     return "removed", 201
 
 @app.route("/day1/yapp", methods=["POST"])
