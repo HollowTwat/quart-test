@@ -156,9 +156,11 @@ async def thread_rec_remove():
 @app.route("/city", methods=["POST"])
 async def city_quip():
     data = await request.get_json()
+    
     goal = data.get('goal')
     city = data.get('city')
     message_body = f"цель {goal} город {city}"
+    print(message_body)
     response = await run_city(message_body, CITY_ASSISTANT_ID)
     return response, 201
 
