@@ -13,10 +13,13 @@ import aiohttp
 import shelve
 from quart_compress import Compress
 import random
+from datetime import datetime, timedelta
 from sale_stickers import STICKERLIST, STICKERLIST_2
 
 sticker_id = "CAACAgIAAxkBAAIHp2aLyyiL4UY-FICRxHkMxTBvi9jkAAIXUAAC8R5hSFFY0DLWfFtzNQQ"
 # "CAACAgIAAxkBAAIE62aF2oFJ5Ltu03_xMZWrC40hoAABzAACGUEAAqIlcUhMnKnBWnZogDUE" CAACAgIAAxkBAAIINGaMcaRe9fVOeaZTFZyWWWM6CrnHAAIBTQACA09oSDqGGMuDHw4tNQQ
+active_threads = {}
+REQUEST_TIMEOUT = 5
 
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 VISION_ASSISTANT_ID = os.getenv('VISION_ASSISTANT_ID')
@@ -238,29 +241,52 @@ async def image_proc():
     print(data)
     url = data.get('url')
     id = data.get('id')
-    print(data, url, id, TELETOKEN)
-    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
-    message = result.get("result")
-    mssg_id = message.get("message_id")
-    outputtype = data.get('outputtype')
 
-    if outputtype == "1":
-        vision = await process_url(url, id, VISION_ASSISTANT_ID)
-        counted = await prettify_and_count(vision, detailed_format=(outputtype == "0"))
-    else:
-        vision = await process_url(url, id, VISION_ASS_ID_2)
-        counted = await prettify_and_count(vision, detailed_format=(outputtype == "0"))
-    await delete_message(TELETOKEN, id, mssg_id)
-    if isinstance(counted, dict) and counted.get("error") == "error":
-        Iserror = True
-    else:
-        Iserror = False
-    Final = json.dumps(
-        {
-            "IsError": str(Iserror),
-            "Answer": counted if isinstance(counted, dict) else json.loads(counted)    
-    })
-    return Final, 201
+    now = datetime.now()
+    expiration_time = active_threads.get(id)
+
+    if expiration_time and expiration_time > now:
+        return jsonify({
+        "IsError": "True",
+        "Answer": {
+            "error": "DoubleTap"
+        }
+    }), 429
+    
+    active_threads[id] = now + timedelta(seconds=REQUEST_TIMEOUT)
+    try:
+
+        print(data, url, id, TELETOKEN)
+        result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+        message = result.get("result")
+        mssg_id = message.get("message_id")
+        outputtype = data.get('outputtype')
+
+        if outputtype == "1":
+            vision = await process_url(url, id, VISION_ASSISTANT_ID)
+            counted = await prettify_and_count(vision, detailed_format=(outputtype == "0"))
+        else:
+            vision = await process_url(url, id, VISION_ASS_ID_2)
+            counted = await prettify_and_count(vision, detailed_format=(outputtype == "0"))
+        await delete_message(TELETOKEN, id, mssg_id)
+        if isinstance(counted, dict) and counted.get("error") == "error":
+            Iserror = True
+        else:
+            Iserror = False
+        Final = json.dumps(
+            {
+                "IsError": str(Iserror),
+                "Answer": counted if isinstance(counted, dict) else json.loads(counted)    
+        })
+        return Final, 201
+    
+    except Exception as e:
+        # Remove the lock if an error occurs
+        active_threads.pop(id, None)
+        return jsonify({
+            "IsError": "True",
+            "error": f"An error occurred: {str(e)}"
+        }), 500
 
 
 @app.route("/edit_oga", methods=["POST"])
