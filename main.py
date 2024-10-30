@@ -174,31 +174,53 @@ async def transcribe():
 
     url = data.get('url')
     id = data.get('id')
-    transcription = await transcribe_audio_from_url(url)
-    await send_mssg(TELETOKEN, id, f"Транскрипция: {transcription}")
-    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
-    print(result)
-    message = result.get("result")
-    mssg_id = message.get("message_id")
-    outputtype = data.get('outputtype')
-    if outputtype == "1":
-        assistant_response = await generate_response(transcription, id, VISION_ASSISTANT_ID)
-        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
-    else:
-        assistant_response = await generate_response(transcription, id, VISION_ASS_ID_2)
-        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
-    await delete_message(TELETOKEN, id, mssg_id)
-    if isinstance(counted, dict) and counted.get("error") == "error":
-        Iserror = True
-    else:
-        Iserror = False
-    Final = json.dumps(
-        {
-            "IsError": str(Iserror),
-            "Answer": counted if isinstance(counted, dict) else json.loads(counted)    
-    })
 
-    return Final, 201
+    now = datetime.now()
+    expiration_time = active_threads.get(id)
+
+    if expiration_time and expiration_time > now:
+        return jsonify({
+        "IsError": "True",
+        "Answer": {
+            "error": "DoubleTap"
+        }
+    }), 429
+    
+    active_threads[id] = now + timedelta(seconds=REQUEST_TIMEOUT)
+    
+    try:
+        transcription = await transcribe_audio_from_url(url)
+        await send_mssg(TELETOKEN, id, f"Транскрипция: {transcription}")
+        result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+        print(result)
+        message = result.get("result")
+        mssg_id = message.get("message_id")
+        outputtype = data.get('outputtype')
+        if outputtype == "1":
+            assistant_response = await generate_response(transcription, id, VISION_ASSISTANT_ID)
+            counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
+        else:
+            assistant_response = await generate_response(transcription, id, VISION_ASS_ID_2)
+            counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
+        await delete_message(TELETOKEN, id, mssg_id)
+        if isinstance(counted, dict) and counted.get("error") == "error":
+            Iserror = True
+        else:
+            Iserror = False
+        Final = json.dumps(
+            {
+                "IsError": str(Iserror),
+                "Answer": counted if isinstance(counted, dict) else json.loads(counted)    
+        })
+
+        return Final, 201
+    except Exception as e:
+            # Remove the lock if an error occurs
+            active_threads.pop(id, None)
+            return jsonify({
+                "IsError": "True",
+                "error": f"An error occurred: {str(e)}"
+            }), 500
 
 
 @app.route("/txt", methods=["POST"])
@@ -207,29 +229,52 @@ async def process_txt():
     data = await request.get_json()
     txt = data.get('txt')
     id = data.get('id')
-    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
-    message = result.get("result")
-    mssg_id = message.get("message_id")
-    outputtype = data.get('outputtype')
 
-    if outputtype == "1":
-        assistant_response = await generate_response(txt, id, VISION_ASSISTANT_ID)
-        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
-    else:
-        assistant_response = await generate_response(txt, id, VISION_ASS_ID_2)
-        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
-    # vision1 = jsonify(vision).content
-    await delete_message(TELETOKEN, id, mssg_id)
-    if isinstance(counted, dict) and counted.get("error") == "error":
-        Iserror = True
-    else:
-        Iserror = False
-    Final = jsonify(
-        {
-            "IsError": str(Iserror),
-            "Answer": counted if isinstance(counted, dict) else json.loads(counted)    
-    })
-    return Final, 201
+    now = datetime.now()
+    expiration_time = active_threads.get(id)
+
+    if expiration_time and expiration_time > now:
+        return jsonify({
+        "IsError": "True",
+        "Answer": {
+            "error": "DoubleTap"
+        }
+    }), 429
+    
+    active_threads[id] = now + timedelta(seconds=REQUEST_TIMEOUT)
+    try:
+        result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+        message = result.get("result")
+        mssg_id = message.get("message_id")
+        outputtype = data.get('outputtype')
+
+        if outputtype == "1":
+            assistant_response = await generate_response(txt, id, VISION_ASSISTANT_ID)
+            counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
+        else:
+            assistant_response = await generate_response(txt, id, VISION_ASS_ID_2)
+            counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
+        # vision1 = jsonify(vision).content
+        await delete_message(TELETOKEN, id, mssg_id)
+        if isinstance(counted, dict) and counted.get("error") == "error":
+            Iserror = True
+        else:
+            Iserror = False
+        Final = jsonify(
+            {
+                "IsError": str(Iserror),
+                "Answer": counted if isinstance(counted, dict) else json.loads(counted)    
+        })
+        return Final, 201
+    
+    except Exception as e:
+        # Remove the lock if an error occurs
+        active_threads.pop(id, None)
+        return jsonify({
+            "IsError": "True",
+            "error": f"An error occurred: {str(e)}"
+        }), 500
+
 
 
 @app.route("/imggg", methods=["POST"])
@@ -299,28 +344,48 @@ async def edit_audio():
     old = data.get('extra')
     outputtype = data.get('outputtype')
 
-    transcription = await transcribe_audio_from_url(url)
-    await send_mssg(TELETOKEN, id, f"Транскрипция: {transcription}")
-    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
-    message = result.get("result")
-    mssg_id = message.get("message_id")
-    if outputtype == "1":
-        assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {transcription}", id, VISION_ASSISTANT_ID)
-        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
-    else:
-        assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {transcription}", id, VISION_ASS_ID_2)
-        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
-    await delete_message(TELETOKEN, id, mssg_id)
-    if isinstance(counted, dict) and counted.get("error") == "error":
-        Iserror = True
-    else:
-        Iserror = False
-    Final = json.dumps(
-        {
-            "IsError": str(Iserror),
-            "Answer": counted if isinstance(counted, dict) else json.loads(counted)    
-    })
-    return Final, 201
+    now = datetime.now()
+    expiration_time = active_threads.get(id)
+
+    if expiration_time and expiration_time > now:
+        return jsonify({
+        "IsError": "True",
+        "Answer": {
+            "error": "DoubleTap"
+        }
+    }), 429
+    
+    active_threads[id] = now + timedelta(seconds=REQUEST_TIMEOUT)
+    try:
+        transcription = await transcribe_audio_from_url(url)
+        await send_mssg(TELETOKEN, id, f"Транскрипция: {transcription}")
+        result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+        message = result.get("result")
+        mssg_id = message.get("message_id")
+        if outputtype == "1":
+            assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {transcription}", id, VISION_ASSISTANT_ID)
+            counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
+        else:
+            assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {transcription}", id, VISION_ASS_ID_2)
+            counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
+        await delete_message(TELETOKEN, id, mssg_id)
+        if isinstance(counted, dict) and counted.get("error") == "error":
+            Iserror = True
+        else:
+            Iserror = False
+        Final = json.dumps(
+            {
+                "IsError": str(Iserror),
+                "Answer": counted if isinstance(counted, dict) else json.loads(counted)    
+        })
+        return Final, 201
+    except Exception as e:
+        # Remove the lock if an error occurs
+        active_threads.pop(id, None)
+        return jsonify({
+            "IsError": "True",
+            "error": f"An error occurred: {str(e)}"
+        }), 500
 
 
 @app.route("/edit_txt", methods=["POST"])
@@ -333,28 +398,48 @@ async def edit_txt():
     old = data.get('extra')
     outputtype = data.get('outputtype')
 
-    print(txt, id, old)
-    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
-    message = result.get("result")
-    mssg_id = message.get("message_id")
-    if outputtype == "1":
-        assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {txt}", id, VISION_ASSISTANT_ID)
-        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
-    else: 
-        assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {txt}", id, VISION_ASS_ID_2)
-        counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
-    await delete_message(TELETOKEN, id, mssg_id)
-    if isinstance(counted, dict) and counted.get("error") == "error":
-        Iserror = True
-    else:
-        Iserror = False
+    now = datetime.now()
+    expiration_time = active_threads.get(id)
+
+    if expiration_time and expiration_time > now:
+        return jsonify({
+        "IsError": "True",
+        "Answer": {
+            "error": "DoubleTap"
+        }
+    }), 429
     
-    Final = json.dumps(
-        {
-            "IsError": str(Iserror),
-            "Answer": counted if isinstance(counted, dict) else json.loads(counted)    
-    })
-    return Final, 201
+    active_threads[id] = now + timedelta(seconds=REQUEST_TIMEOUT)
+    try:
+        print(txt, id, old)
+        result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+        message = result.get("result")
+        mssg_id = message.get("message_id")
+        if outputtype == "1":
+            assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {txt}", id, VISION_ASSISTANT_ID)
+            counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
+        else: 
+            assistant_response = await generate_response(f"Старый прием пищи: {old} отредактируй его вот так: {txt}", id, VISION_ASS_ID_2)
+            counted = await prettify_and_count(assistant_response, detailed_format=(outputtype == "0"))
+        await delete_message(TELETOKEN, id, mssg_id)
+        if isinstance(counted, dict) and counted.get("error") == "error":
+            Iserror = True
+        else:
+            Iserror = False
+        
+        Final = json.dumps(
+            {
+                "IsError": str(Iserror),
+                "Answer": counted if isinstance(counted, dict) else json.loads(counted)    
+        })
+        return Final, 201
+    except Exception as e:
+        # Remove the lock if an error occurs
+        active_threads.pop(id, None)
+        return jsonify({
+            "IsError": "True",
+            "error": f"An error occurred: {str(e)}"
+        }), 500
 
 
 @app.route("/day1/yapp_create", methods=["POST"])
@@ -388,28 +473,49 @@ async def yapp():
     id = data.get('id')
     question = data.get('txt')
 
-    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
-    message = result.get("result")
-    mssg_id = message.get("message_id")
 
-    response = await yapp_assistant(question, id, YAPP_SESH_ASSISTANT_ID)
-    if response != "error":
-        Iserror = False
-        Jsoned = {
-                "extra": str(response)
-            }
-    elif response == "error":
-        Iserror = True
-        Jsoned = {
-                "error": str(response)
-            }
-    Final = json.dumps(
-        {
-            "IsError": str(Iserror),
-            "Answer": Jsoned    
-    })
-    await delete_message(TELETOKEN, id, mssg_id)
-    return Final, 201
+    now = datetime.now()
+    expiration_time = active_threads.get(id)
+
+    if expiration_time and expiration_time > now:
+        return jsonify({
+        "IsError": "True",
+        "Answer": {
+            "error": "DoubleTap"
+        }
+    }), 429
+    
+    active_threads[id] = now + timedelta(seconds=REQUEST_TIMEOUT)
+    try:
+        result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+        message = result.get("result")
+        mssg_id = message.get("message_id")
+
+        response = await yapp_assistant(question, id, YAPP_SESH_ASSISTANT_ID)
+        if response != "error":
+            Iserror = False
+            Jsoned = {
+                    "extra": str(response)
+                }
+        elif response == "error":
+            Iserror = True
+            Jsoned = {
+                    "error": str(response)
+                }
+        Final = json.dumps(
+            {
+                "IsError": str(Iserror),
+                "Answer": Jsoned    
+        })
+        await delete_message(TELETOKEN, id, mssg_id)
+        return Final, 201
+    except Exception as e:
+        # Remove the lock if an error occurs
+        active_threads.pop(id, None)
+        return jsonify({
+            "IsError": "True",
+            "error": f"An error occurred: {str(e)}"
+        }), 500
 
 
 @app.route("/day1/yapp_oga", methods=["POST"])
@@ -418,30 +524,51 @@ async def yapp_oga():
     data = await request.get_json()
     id = data.get('id')
     question = data.get('txt')
-    transcription = await transcribe_audio_from_url(question)
 
-    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
-    message = result.get("result")
-    mssg_id = message.get("message_id")
+    now = datetime.now()
+    expiration_time = active_threads.get(id)
 
-    response = await yapp_assistant(transcription, id, YAPP_SESH_ASSISTANT_ID)
-    if response != "error":
-        Iserror = False
-        Jsoned = {
-                "extra": str(response)
-            }
-    elif response == "error":
-        Iserror = True
-        Jsoned = {
-                "error": str(response)
-            }
-    Final = json.dumps(
-        {
-            "IsError": str(Iserror),
-            "Answer": Jsoned    
-    })
-    await delete_message(TELETOKEN, id, mssg_id)
-    return Final, 201
+    if expiration_time and expiration_time > now:
+        return jsonify({
+        "IsError": "True",
+        "Answer": {
+            "error": "DoubleTap"
+        }
+    }), 429
+    
+    active_threads[id] = now + timedelta(seconds=REQUEST_TIMEOUT)
+    try:
+        transcription = await transcribe_audio_from_url(question)
+
+        result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+        message = result.get("result")
+        mssg_id = message.get("message_id")
+
+        response = await yapp_assistant(transcription, id, YAPP_SESH_ASSISTANT_ID)
+        if response != "error":
+            Iserror = False
+            Jsoned = {
+                    "extra": str(response)
+                }
+        elif response == "error":
+            Iserror = True
+            Jsoned = {
+                    "error": str(response)
+                }
+        Final = json.dumps(
+            {
+                "IsError": str(Iserror),
+                "Answer": Jsoned    
+        })
+        await delete_message(TELETOKEN, id, mssg_id)
+        return Final, 201
+    except Exception as e:
+        # Remove the lock if an error occurs
+        active_threads.pop(id, None)
+        return jsonify({
+            "IsError": "True",
+            "error": f"An error occurred: {str(e)}"
+        }), 500
 
 
 @app.route("/rate_day", methods=["POST"])
@@ -452,29 +579,48 @@ async def rate_day():
     print(data)
     id = data.get('id')
     question = data.get('txt')
+    now = datetime.now()
+    expiration_time = active_threads.get(id)
 
-    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
-    message = result.get("result")
-    mssg_id = message.get("message_id")
+    if expiration_time and expiration_time > now:
+        return jsonify({
+        "IsError": "True",
+        "Answer": {
+            "error": "DoubleTap"
+        }
+    }), 429
+    
+    active_threads[id] = now + timedelta(seconds=REQUEST_TIMEOUT)
+    try:
+        result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+        message = result.get("result")
+        mssg_id = message.get("message_id")
 
-    assistant_response = await no_thread_ass(question, RATE_DAY_ASS_ID)
-    if assistant_response != "error":
-        Iserror = False
-        Jsoned = {
-                "extra": str(assistant_response)
-            }
-    elif assistant_response == "error":
-        Iserror = True
-        Jsoned = {
-                "error": str(assistant_response)
-            }
-    Final = json.dumps(
-        {
-            "IsError": str(Iserror),
-            "Answer": Jsoned    
-    })
-    await delete_message(TELETOKEN, id, mssg_id)
-    return Final, 201
+        assistant_response = await no_thread_ass(question, RATE_DAY_ASS_ID)
+        if assistant_response != "error":
+            Iserror = False
+            Jsoned = {
+                    "extra": str(assistant_response)
+                }
+        elif assistant_response == "error":
+            Iserror = True
+            Jsoned = {
+                    "error": str(assistant_response)
+                }
+        Final = json.dumps(
+            {
+                "IsError": str(Iserror),
+                "Answer": Jsoned    
+        })
+        await delete_message(TELETOKEN, id, mssg_id)
+        return Final, 201
+    except Exception as e:
+            # Remove the lock if an error occurs
+            active_threads.pop(id, None)
+            return jsonify({
+                "IsError": "True",
+                "error": f"An error occurred: {str(e)}"
+            }), 500
 
 
 @app.route("/rate_any", methods=["POST"])
@@ -488,29 +634,49 @@ async def rate_any():
     question = data.get('txt')
     ass = get_correct_ass(size)
 
-    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
-    message = result.get("result")
-    mssg_id = message.get("message_id")
+    now = datetime.now()
+    expiration_time = active_threads.get(id)
 
-    assistant_response = await no_thread_ass(question, ass)
-    if assistant_response != "error":
-        Iserror = False
-        assistant_response_clean = await remove_reference(assistant_response)
-        Jsoned = {
-                "extra": str(assistant_response_clean)
-            }
-    elif assistant_response == "error":
-        Iserror = True
-        Jsoned = {
-                "error": str(assistant_response)
-            }
-    Final = json.dumps(
-        {
-            "IsError": str(Iserror),
-            "Answer": Jsoned    
-    })
-    await delete_message(TELETOKEN, id, mssg_id)
-    return Final, 201
+    if expiration_time and expiration_time > now:
+        return jsonify({
+        "IsError": "True",
+        "Answer": {
+            "error": "DoubleTap"
+        }
+    }), 429
+    
+    active_threads[id] = now + timedelta(seconds=REQUEST_TIMEOUT)
+    try:
+        result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+        message = result.get("result")
+        mssg_id = message.get("message_id")
+
+        assistant_response = await no_thread_ass(question, ass)
+        if assistant_response != "error":
+            Iserror = False
+            assistant_response_clean = await remove_reference(assistant_response)
+            Jsoned = {
+                    "extra": str(assistant_response_clean)
+                }
+        elif assistant_response == "error":
+            Iserror = True
+            Jsoned = {
+                    "error": str(assistant_response)
+                }
+        Final = json.dumps(
+            {
+                "IsError": str(Iserror),
+                "Answer": Jsoned    
+        })
+        await delete_message(TELETOKEN, id, mssg_id)
+        return Final, 201
+    except Exception as e:
+        # Remove the lock if an error occurs
+        active_threads.pop(id, None)
+        return jsonify({
+            "IsError": "True",
+            "error": f"An error occurred: {str(e)}"
+        }), 500
 
 @app.route("/etik", methods=["POST"])
 async def etik_proc():
@@ -522,30 +688,50 @@ async def etik_proc():
     id = data.get('id')
     allergies = data.get('extra')
     print(data, url, id, TELETOKEN)
-    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
-    message = result.get("result")
-    mssg_id = message.get("message_id")
-    outputtype = data.get('outputtype')
-    
-    vision = await process_url_etik(url, allergies, id, ETIK_ASS_ID)
-    if vision != "error":
-        Iserror = False
-        Jsoned = {
-                "extra": str(vision)
-            }
-    elif vision == "error":
-        Iserror = True
-        Jsoned = {
-                "error": str(vision)
-            }
-    Final = json.dumps(
-        {
-            "IsError": str(Iserror),
-            "Answer": Jsoned  
-    })
-    await delete_message(TELETOKEN, id, mssg_id)
-    print(Final)
-    return Final, 201
+
+    now = datetime.now()
+    expiration_time = active_threads.get(id)
+
+    if expiration_time and expiration_time > now:
+        return jsonify({
+        "IsError": "True",
+        "Answer": {
+            "error": "DoubleTap"
+        }
+    }), 429
+    active_threads[id] = now + timedelta(seconds=REQUEST_TIMEOUT)
+    try:
+        result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+        message = result.get("result")
+        mssg_id = message.get("message_id")
+        outputtype = data.get('outputtype')
+        
+        vision = await process_url_etik(url, allergies, id, ETIK_ASS_ID)
+        if vision != "error":
+            Iserror = False
+            Jsoned = {
+                    "extra": str(vision)
+                }
+        elif vision == "error":
+            Iserror = True
+            Jsoned = {
+                    "error": str(vision)
+                }
+        Final = json.dumps(
+            {
+                "IsError": str(Iserror),
+                "Answer": Jsoned  
+        })
+        await delete_message(TELETOKEN, id, mssg_id)
+        print(Final)
+        return Final, 201
+    except Exception as e:
+        # Remove the lock if an error occurs
+        active_threads.pop(id, None)
+        return jsonify({
+            "IsError": "True",
+            "error": f"An error occurred: {str(e)}"
+        }), 500
 
 @app.route("/recipe_oga", methods=["POST"])
 async def proc_recipe_oga():
@@ -554,32 +740,53 @@ async def proc_recipe_oga():
     url = data.get('url')
     id = data.get('id')
     extra = data.get('extra')
-    transcription = await transcribe_audio_from_url(url)
-    await send_mssg(TELETOKEN, id, f"Транскрипция: {transcription}")
-    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
-    print(result)
-    message = result.get("result")
-    mssg_id = message.get("message_id")
 
-    question_with_extra = f"question:{transcription}, extra:{extra}"
-    assistant_response = await rec_assistant(question_with_extra, id, RECIPE_ASS_ID)
-    await delete_message(TELETOKEN, id, mssg_id)
-    if assistant_response != "error":
-        Iserror = False
-        Jsoned = {
-                "extra": str(assistant_response)
-            }
-    elif assistant_response == "error":
-        Iserror = True
-        Jsoned = {
-                "error": str(assistant_response)
-            }
-    Final = json.dumps(
-        {
-            "IsError": str(Iserror),
-            "Answer": Jsoned    
-    })
-    return Final, 201
+    now = datetime.now()
+    expiration_time = active_threads.get(id)
+
+    if expiration_time and expiration_time > now:
+        return jsonify({
+        "IsError": "True",
+        "Answer": {
+            "error": "DoubleTap"
+        }
+    }), 429
+    active_threads[id] = now + timedelta(seconds=REQUEST_TIMEOUT)
+    try:
+        transcription = await transcribe_audio_from_url(url)
+        await send_mssg(TELETOKEN, id, f"Транскрипция: {transcription}")
+        result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+        print(result)
+        message = result.get("result")
+        mssg_id = message.get("message_id")
+
+        question_with_extra = f"question:{transcription}, extra:{extra}"
+        assistant_response = await rec_assistant(question_with_extra, id, RECIPE_ASS_ID)
+        await delete_message(TELETOKEN, id, mssg_id)
+        if assistant_response != "error":
+            Iserror = False
+            Jsoned = {
+                    "extra": str(assistant_response)
+                }
+        elif assistant_response == "error":
+            Iserror = True
+            Jsoned = {
+                    "error": str(assistant_response)
+                }
+        Final = json.dumps(
+            {
+                "IsError": str(Iserror),
+                "Answer": Jsoned    
+        })
+        return Final, 201
+    except Exception as e:
+        # Remove the lock if an error occurs
+        active_threads.pop(id, None)
+        return jsonify({
+            "IsError": "True",
+            "error": f"An error occurred: {str(e)}"
+        }), 500
+
 
 @app.route("/recipe_txt", methods=["POST"])
 async def proc_recipe_txt():
@@ -589,30 +796,51 @@ async def proc_recipe_txt():
     id = data.get('id')
     extra = data.get('extra')
     
-    result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
-    print(result)
-    message = result.get("result")
-    mssg_id = message.get("message_id")
 
-    question_with_extra = f"question:{txt}, extra:{extra}"
-    assistant_response = await rec_assistant(question_with_extra, id, RECIPE_ASS_ID)
-    await delete_message(TELETOKEN, id, mssg_id)
-    if assistant_response != "error":
-        Iserror = False
-        Jsoned = {
-                "extra": str(assistant_response)
-            }
-    elif assistant_response == "error":
-        Iserror = True
-        Jsoned = {
-                "error": str(assistant_response)
-            }
-    Final = json.dumps(
-        {
-            "IsError": str(Iserror),
-            "Answer": Jsoned    
-    })
-    return Final, 201
+    now = datetime.now()
+    expiration_time = active_threads.get(id)
+
+    if expiration_time and expiration_time > now:
+        return jsonify({
+        "IsError": "True",
+        "Answer": {
+            "error": "DoubleTap"
+        }
+    }), 429
+    active_threads[id] = now + timedelta(seconds=REQUEST_TIMEOUT)
+    try:
+        result = await send_sticker(TELETOKEN, id, random.choice(STICKERLIST))
+        print(result)
+        message = result.get("result")
+        mssg_id = message.get("message_id")
+
+        question_with_extra = f"question:{txt}, extra:{extra}"
+        assistant_response = await rec_assistant(question_with_extra, id, RECIPE_ASS_ID)
+        await delete_message(TELETOKEN, id, mssg_id)
+        if assistant_response != "error":
+            Iserror = False
+            Jsoned = {
+                    "extra": str(assistant_response)
+                }
+        elif assistant_response == "error":
+            Iserror = True
+            Jsoned = {
+                    "error": str(assistant_response)
+                }
+        Final = json.dumps(
+            {
+                "IsError": str(Iserror),
+                "Answer": Jsoned    
+        })
+        return Final, 201
+    except Exception as e:
+            # Remove the lock if an error occurs
+            active_threads.pop(id, None)
+            return jsonify({
+                "IsError": "True",
+                "error": f"An error occurred: {str(e)}"
+            }), 500
+
 
 @app.route("/oga_2", methods=["POST"])
 async def transcribe_2():
