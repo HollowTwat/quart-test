@@ -44,7 +44,6 @@ TELETOKEN = os.getenv('TELEBOT')
 TELETOKEN_2 = os.getenv('TELEBOT_2')
 file_url = "https://github.com/HollowTwat/quart-test/blob/main/hmm.gif?raw=true"
 
-# app = Quart(__name__)
 app = Quart(__name__, static_url_path='/static')
 # required to get a visitors IP through railway
 app.config["SESSION_REVERSE_PROXY"] = True
