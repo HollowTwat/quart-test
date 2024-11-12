@@ -938,12 +938,10 @@ async def stck_spam():
     id = data.get('id')
     for sticker in STICKERLIST:
         try:
-            send_sticker(TELETOKEN, id, sticker)
+            await send_sticker(TELETOKEN, id, sticker)
             answer = "success"
-            # return answer
         except Exception as e:
             answer = f"exception {e} occured"
-        answer = "success"
     return answer, 201
 
 if __name__ == "__main__":
