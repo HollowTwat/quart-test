@@ -934,7 +934,8 @@ async def test():
 
 @app.route("/stck_spam", methods=["POST"])
 async def stck_spam():
-    id = 464682207
+    data = await request.get_json()
+    id = data.get('id')
     for sticker in STICKERLIST:
         try:
             await send_sticker(TELETOKEN, id, sticker)
