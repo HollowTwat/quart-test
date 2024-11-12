@@ -932,6 +932,18 @@ async def test():
     print(data)
     return data, 201
 
+@app.route("/stck_spam", methods=["POST"])
+async def stck_spam():
+    id = 464682207
+    for sticker in STICKERLIST:
+        try:
+            await send_sticker(TELETOKEN, id, sticker)
+            answer = "success"
+            return answer
+        except Exception as e:
+            answer = f"exception {e} occured"
+    return answer, 201
+
 if __name__ == "__main__":
     # app.run(port=8080, debug=True)
     app.run(host='::', port=PORT, debug=True)
