@@ -26,7 +26,8 @@ bug_channel = "-1002345895875"
 async def remove_reference(input_string):
     # Use regular expression to match text between 【 and 】, including the symbols
     result = re.sub(r'【.*?】', '', input_string)
-    return result
+    result1 = result.replace("<br>", "\n")
+    return result1
 
 async def generate_response(message_body, usr_id, assistant):
     thread_id = await check_if_thread_exists(usr_id)
