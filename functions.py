@@ -17,7 +17,7 @@ YAPP_SESH_ASSISTANT_ID = os.getenv('YAPP_SESH_ASSISTANT_ID')
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 aclient = AsyncOpenAI(api_key=OPENAI_API_KEY)
 openai.api_key = OPENAI_API_KEY
-TELETOKEN_2 = os.getenv('TELEBOT_2')
+TELETOKEN_2 = os.getenv('TELEBOT')
 bug_channel = "-1002345895875"
 
 
