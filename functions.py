@@ -232,7 +232,7 @@ async def run_assistant(thread, assistant):
             if run.status == "failed":
                 messages = await aclient.beta.threads.messages.list(thread_id=thread.id)
                 raise Exception(
-                    f"Run failed with status: {run.status} and generated {messages.data[0]} and also {run.failed_at} and {run.incomplete_details}")
+                    f"Run failed with status: \n{run.status} \nand generated \n{messages.data[0]} \nrun.failed_at: \n{run.failed_at} \nrun.incomplete_details: \n{run.incomplete_details}")
 
             print(run.status)
             await asyncio.sleep(1.5)
