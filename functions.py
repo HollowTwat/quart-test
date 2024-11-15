@@ -242,7 +242,7 @@ async def run_assistant(thread, assistant):
         messages = await aclient.beta.threads.messages.list(thread_id=thread.id)
         latest_mssg = messages.data[0].content[0].text.value
         print(f"generated: {latest_mssg}")
-        await send_mssg(TELETOKEN_2, bug_channel, f"тест на работу send_mssg")
+        # await send_mssg(TELETOKEN_2, bug_channel, f"тест на работу send_mssg")
         return latest_mssg
 
     except Exception as e:
