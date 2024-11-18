@@ -112,6 +112,14 @@ def get_correct_ass(size):
 
     return ass_mapping.get(size)
 
+def get_goal(goal):
+    ass_mapping = {
+        '-': "Похудеть",
+        '+': "Набрать мышечную массу",
+        '=': "Сохранить вес и здоровье"
+    }
+
+    return ass_mapping.get(goal)
 
 @app.route("/")
 async def index() -> str:
@@ -161,9 +169,10 @@ async def thread_rec_remove():
 async def city_quip():
     data = await request.get_json()
     
-    goal = data.get('goal')
+    goal_num = data.get('goal')
     city = data.get('city')
-    message_body = f"цель {goal} город {city}"
+    goal = get_goal(goal_num)
+    message_body = f"Цель: {goal}. Город: {city}"
     print(message_body)
     response = await run_city(message_body, CITY_ASSISTANT_ID)
     return response, 201
