@@ -184,6 +184,9 @@ async def transcribe():
 
     url = data.get('url')
     id = data.get('id')
+    delete_thread = data.get('delete_thread')
+    if delete_thread:
+        await remove_thread(id)
 
     now = datetime.now()
     expiration_time = active_threads.get(id)
@@ -240,6 +243,9 @@ async def process_txt():
     data = await request.get_json()
     txt = data.get('txt')
     id = data.get('id')
+    delete_thread = data.get('delete_thread')
+    if delete_thread:
+        await remove_thread(id)
 
     now = datetime.now()
     expiration_time = active_threads.get(id)
@@ -356,6 +362,9 @@ async def edit_audio():
     id = data.get('id')
     old = data.get('extra')
     outputtype = data.get('outputtype')
+    delete_thread = data.get('delete_thread')
+    if delete_thread:
+        await remove_thread(id)
 
     now = datetime.now()
     expiration_time = active_threads.get(id)
@@ -411,6 +420,9 @@ async def edit_txt():
     id = data.get('id')
     old = data.get('extra')
     outputtype = data.get('outputtype')
+    delete_thread = data.get('delete_thread')
+    if delete_thread:
+        await remove_thread(id)
 
     now = datetime.now()
     expiration_time = active_threads.get(id)
@@ -487,6 +499,9 @@ async def yapp():
     print(data)
     id = data.get('id')
     question = data.get('txt')
+    delete_thread = data.get('delete_thread')
+    if delete_thread:
+        await remove_thread(id)
 
 
     now = datetime.now()
@@ -540,6 +555,9 @@ async def yapp_oga():
     data = await request.get_json()
     id = data.get('id')
     question = data.get('txt')
+    delete_thread = data.get('delete_thread')
+    if delete_thread:
+        await remove_thread(id)
 
     now = datetime.now()
     expiration_time = active_threads.get(id)
@@ -760,6 +778,9 @@ async def proc_recipe_oga():
     url = data.get('url')
     id = data.get('id')
     extra = data.get('extra')
+    delete_thread = data.get('delete_thread')
+    if delete_thread:
+        await remove_rec_thread(id)
 
     now = datetime.now()
     expiration_time = active_threads.get(id)
@@ -816,6 +837,9 @@ async def proc_recipe_txt():
     txt = data.get('txt')
     id = data.get('id')
     extra = data.get('extra')
+    delete_thread = data.get('delete_thread')
+    if delete_thread:
+        await remove_rec_thread(id)
     
 
     now = datetime.now()
@@ -949,11 +973,10 @@ async def image_proc_2():
     })
     return Final, 201
 
-@app.route("/test", methods=["POST"])
+@app.route("/test", methods=["GET"])
 async def test():
-    data = await request.get_json()
-    print(data)
-    return data, 201
+
+    return "ok", 200
 
 @app.route("/stck_spam", methods=["POST"])
 async def stck_spam():
