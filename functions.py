@@ -57,14 +57,13 @@ async def generate_response(message_body, usr_id, assistant):
 async def process_url(url, usr_id, assistant):
     # thread_id = await check_if_thread_exists(usr_id)
 
-    # if thread_id is None:
-    thread = await aclient.beta.threads.create()
-    await store_thread(usr_id, thread.id)
-    thread_id = thread.id
+    # # if thread_id is None:
+    # thread = await aclient.beta.threads.create()
+    # await store_thread(usr_id, thread.id)
+    # thread_id = thread.id
     # else:
     #     print(f"Retrieving existing thread {usr_id}")
     #     thread = await aclient.beta.threads.retrieve(thread_id)
-    print(f"картинка для {usr_id} {url} ушла в {thread_id}")
     thread = await aclient.beta.threads.create(
         messages=[
 
@@ -79,6 +78,7 @@ async def process_url(url, usr_id, assistant):
         ]
     )
     await store_thread(usr_id, thread.id)
+    print(f"картинка для {usr_id} {url} ушла в {thread.id}")
 
     new_message = await run_assistant(thread, assistant)
 
