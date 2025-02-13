@@ -669,6 +669,7 @@ async def rate_any():
     id = data.get('id')
     question = data.get('txt')
     ass = get_correct_ass(size)
+    print("parsed_data_done")
 
     now = datetime.now()
     expiration_time = active_threads.get(id)
