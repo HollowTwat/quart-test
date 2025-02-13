@@ -55,17 +55,16 @@ async def generate_response(message_body, usr_id, assistant):
 
 
 async def process_url(url, usr_id, assistant):
-    thread_id = await check_if_thread_exists(usr_id)
+    # thread_id = await check_if_thread_exists(usr_id)
 
-    if thread_id is None:
-        print(f"Creating new thread for {usr_id}")
-        thread = await aclient.beta.threads.create()
-        await store_thread(usr_id, thread.id)
-        thread_id = thread.id
-    else:
-        print(f"Retrieving existing thread {usr_id}")
-        thread = await aclient.beta.threads.retrieve(thread_id)
-    print(url)
+    # if thread_id is None:
+    thread = await aclient.beta.threads.create()
+    await store_thread(usr_id, thread.id)
+    thread_id = thread.id
+    # else:
+    #     print(f"Retrieving existing thread {usr_id}")
+    #     thread = await aclient.beta.threads.retrieve(thread_id)
+    print(f"картинка для {usr_id} {url} ушла в {thread_id}")
     thread = await aclient.beta.threads.create(
         messages=[
 
@@ -234,7 +233,7 @@ async def run_assistant(thread, assistant):
                 raise Exception(
                     f"Run failed with status: \n{run.status} \nand generated \n{messages.data[0]} \nrun.failed_at: \n{run.failed_at} \nrun.incomplete_details: \n{run.incomplete_details}")
 
-            print(run.status)
+            print(f"{run.status} on thread {thread_id}")
             await asyncio.sleep(1.5)
             run = await aclient.beta.threads.runs.retrieve(
                 thread_id=thread.id, run_id=run.id)
@@ -380,7 +379,7 @@ async def generate_response(message_body, usr_id, assistant):
         content=message_body,
     )
     print(message)
-
+    print(f"user: {usr_id}, thread: {thread.id}")
     new_message = await run_assistant(thread, assistant)
     return new_message
 
